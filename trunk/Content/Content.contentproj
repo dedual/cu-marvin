@@ -18,6 +18,10 @@
     <XnaPlatform>Windows</XnaPlatform>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GoblinXNA, Version=3.2.13.2009, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\..\GoblinXNA\bin\GoblinXNA.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.EffectImporter, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
@@ -326,52 +330,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\GoblinProject\GoblinXNAv3.0\data\Fonts\DebugFont.spritefont">
-      <Link>Fonts\DebugFont.spritefont</Link>
-      <Name>DebugFont</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-    </Compile>
-    <Compile Include="..\..\..\..\GoblinProject\GoblinXNAv3.0\data\Fonts\Sample.spritefont">
-      <Link>Fonts\Sample.spritefont</Link>
-      <Name>Sample</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-    </Compile>
-    <Compile Include="..\..\..\..\GoblinProject\GoblinXNAv3.0\data\Fonts\SliderFont.spritefont">
-      <Link>Fonts\SliderFont.spritefont</Link>
-      <Name>SliderFont</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-    </Compile>
-    <Compile Include="..\..\..\..\GoblinProject\GoblinXNAv3.0\data\Fonts\UIFont.spritefont">
-      <Link>Fonts\UIFont.spritefont</Link>
-      <Name>UIFont</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\..\GoblinProject\GoblinXNAv3.0\data\Shaders\ParticleEffect.fx">
-      <Link>Shaders\ParticleEffect.fx</Link>
-      <Name>ParticleEffect</Name>
-      <Importer>EffectImporter</Importer>
-      <Processor>EffectProcessor</Processor>
-    </Compile>
-    <Compile Include="..\..\..\..\GoblinProject\GoblinXNAv3.0\data\Shaders\PostScreenShadowBlur.fx">
-      <Link>Shaders\PostScreenShadowBlur.fx</Link>
-      <Name>PostScreenShadowBlur</Name>
-      <Importer>EffectImporter</Importer>
-      <Processor>EffectProcessor</Processor>
-    </Compile>
-    <Compile Include="..\..\..\..\GoblinProject\GoblinXNAv3.0\data\Shaders\ShadowMap.fx">
-      <Link>Shaders\ShadowMap.fx</Link>
-      <Name>ShadowMap</Name>
-      <Importer>EffectImporter</Importer>
-      <Processor>EffectProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Models\Plain\558_Riverside.x">
       <Name>558_Riverside</Name>
       <Importer>XImporter</Importer>
@@ -662,6 +620,45 @@
       <Name>564_Riverside</Name>
       <Importer>XImporter</Importer>
       <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Fonts\DebugFont.spritefont">
+      <Name>DebugFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+    <Compile Include="Fonts\Sample.spritefont">
+      <Name>Sample</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+    <Compile Include="Fonts\SliderFont.spritefont">
+      <Name>SliderFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+    <Compile Include="Fonts\UIFont.spritefont">
+      <Name>UIFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Shaders\ParticleEffect.fx">
+      <Name>ParticleEffect</Name>
+      <Importer>EffectImporter</Importer>
+      <Processor>EffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Shaders\PostScreenShadowBlur.fx">
+      <Name>PostScreenShadowBlur</Name>
+      <Importer>EffectImporter</Importer>
+      <Processor>EffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Shaders\ShadowMap.fx">
+      <Name>ShadowMap</Name>
+      <Importer>EffectImporter</Importer>
+      <Processor>EffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\v3.0\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
