@@ -86,26 +86,17 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Manhattanville.cs" />
+    <Compile Include="MARVIN.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\GoblinProject\GoblinXNAv3.0\bin\ARTagWrapper.dll">
-      <Link>ARTagWrapper.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\..\GoblinProject\GoblinXNAv3.0\bin\freeglut.dll">
-      <Link>freeglut.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\..\GoblinProject\GoblinXNAv3.0\bin\Newton.dll">
-      <Link>Newton.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="ARTagWrapper.dll" />
+    <Content Include="freeglut.dll" />
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
     <Content Include="manhattanville.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Newton.dll" />
   </ItemGroup>
   <ItemGroup>
     <NestedContentProject Include="Content\Content.contentproj">
