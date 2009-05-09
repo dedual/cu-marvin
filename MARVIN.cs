@@ -28,7 +28,7 @@ using GoblinXNA.Device.Capture;
 using GoblinXNA.Device.Vision;
 using GoblinXNA.Device.Vision.Marker;
 
-namespace Manhattanville
+namespace MARVIN
 {
     /// <summary>
     /// This is the main type for your game
@@ -41,9 +41,13 @@ namespace Manhattanville
         MarkerNode groundMarkerNode, toolbar1MarkerNode;
         List<GeometryNode> buildings;
         TransformNode parentTrans;
+        TransformNode toolBar1OccluderTransNode;
         GeometryNode pointerTip;
         GeometryNode pointerSegment;
+        GeometryNode toolbar1Node;
         Material pointerMaterial;
+        Vector4 ORIGIN = new Vector4(0, 0, 0, 1);
+        String selectedBuildingName = null;
 
         float y_shift = -62;
         float x_shift = -28.0f;
@@ -76,6 +80,8 @@ namespace Manhattanville
             // tracking. It'll be created automatically
             SetupMarkerTracking();
 
+            createPointer();
+
             // Set up the lights used in the scene
             CreateLights();
 
@@ -91,6 +97,8 @@ namespace Manhattanville
 
             // Show Frames-Per-Second on the screen for debugging
             State.ShowFPS = true;
+            State.ShowNotifications = true;
+            GoblinXNA.UI.Notifier.FadeOutTime = 1;
 
             base.Initialize();
         }
@@ -139,13 +147,19 @@ namespace Manhattanville
             groundMarkerNode = new MarkerNode(scene.MarkerTracker, "ground");
             scene.RootNode.AddChild(groundMarkerNode);
 
+            // Create a marker node to track a toolbar marker array. Since we expect that the 
+            // toolbar marker array will move a lot, we use a large smoothing alpha.
+            toolbar1MarkerNode = new MarkerNode(scene.MarkerTracker, "toolbar1");
+            toolbar1MarkerNode.Smoother = new DESSmoother(0.8f, 0.8f);
+            scene.RootNode.AddChild(toolbar1MarkerNode);
+
             // Display the camera image in the background
             scene.ShowCameraImage = true;
         }
 
         private void createPointer()
         {
-            GeometryNode toolbar1Node = new GeometryNode("Toolbar1");
+            toolbar1Node = new GeometryNode("Toolbar1");
             toolbar1Node.Model = new Box(18, 28, 0.1f); //I think toolbar itself is 20x8
             // Set this toolbar model to act as an occluder so that it appears transparent
             toolbar1Node.IsOccluder = true;
@@ -157,7 +171,7 @@ namespace Manhattanville
             toolbar1Material.Specular = Color.White.ToVector4();
             toolbar1Material.SpecularPower = 20;
             toolbar1Node.Material = toolbar1Material;
-            TransformNode toolBar1OccluderTransNode = new TransformNode();
+            toolBar1OccluderTransNode = new TransformNode();
             toolBar1OccluderTransNode.Translation = new Vector3(3, 10, 0);
             toolbar1MarkerNode.AddChild(toolBar1OccluderTransNode);
             toolBar1OccluderTransNode.AddChild(toolbar1Node);
@@ -586,7 +600,66 @@ namespace Manhattanville
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            // If the toolbar marker array is detected
+            if (toolbar1MarkerNode.MarkerFound)
+            {
+                performPointing();
+            }
+            else
+            {
+
+            }
+            
             base.Draw(gameTime);
+        }
+
+        private void performPointing()
+        {
+            Vector4 homog_pointerWorldCoords = Vector4.Transform(ORIGIN, pointerTip.WorldTransformation * toolbar1MarkerNode.WorldTransformation);
+            Vector3 inhomog_pointerWorldCoords = new Vector3(homog_pointerWorldCoords.X, homog_pointerWorldCoords.Y, homog_pointerWorldCoords.Z);
+            Vector3 homog_pointerScreenCoords = graphics.GraphicsDevice.Viewport.Project(inhomog_pointerWorldCoords, 
+                State.ProjectionMatrix, State.ViewMatrix, Matrix.Identity);
+
+            //GoblinXNA.UI.Notifier.AddMessage("Pointer Screen Coords: " + homog_pointerScreenCoords);
+
+            // 0 means on the near clipping plane, and 1 means on the far clipping plane
+            Vector3 nearSource = new Vector3(homog_pointerScreenCoords.X, homog_pointerScreenCoords.Y, 0);
+            Vector3 farSource = new Vector3(homog_pointerScreenCoords.X, homog_pointerScreenCoords.Y, 1);
+
+            // Now convert the near and far source to actual near and far 3D points based on our eye location
+            // and view frustum
+            Vector3 nearPoint = graphics.GraphicsDevice.Viewport.Unproject(nearSource,
+                State.ProjectionMatrix, State.ViewMatrix, Matrix.Identity);
+            Vector3 farPoint = graphics.GraphicsDevice.Viewport.Unproject(farSource,
+                State.ProjectionMatrix, State.ViewMatrix, Matrix.Identity);
+
+            // Have the physics engine intersect the pick ray defined by the nearPoint and farPoint with
+            // the physics objects in the scene (which we have set up to approximate the model geometry).
+            List<PickedObject> pickedObjects = ((NewtonPhysics)scene.PhysicsEngine).PickRayCast(
+                nearPoint, farPoint);
+
+            // If one or more objects intersect with our ray vector
+            if (pickedObjects.Count > 0)
+            {
+                // Since PickedObject can be compared (which means it implements IComparable), we can sort it in 
+                // the order of closest intersected object to farthest intersected object
+                pickedObjects.Sort();
+
+                // We only care about the closest picked object for now, so we'll simply display the name 
+                // of the closest picked object whose container is a geometry node
+                selectedBuildingName = ((GeometryNode)pickedObjects[0].PickedPhysicsObject.Container).Name;
+                //label = selectedBuildingName + " is selected";
+
+                //previouslySelectedBuilding = selectedBuilding;
+                //selectedBuilding = (GeometryNode)scene.GetNode(selectedBuildingName);
+            }
+            else
+            {
+                //label = "Nothing is selected";
+                //previouslySelectedBuilding = selectedBuilding;
+                selectedBuildingName = null;
+                //selectedBuilding = null;
+            }
         }
     }
 }
