@@ -1,0 +1,7 @@
+The ParticleEffect.fx file is from the Particle 3D tutorial found 
+on the XNA Creator's Club website (http://creators.xna.com/).
+
+The ShadowMap.fx and PostScreenShadowBlur.fx are from the XNA Racing
+Game Start Kit (http://www.xnaracinggame.com/)
+
+The DirectXShader.fx is wrote by Fan Lin <linfan68@gmail.com>
