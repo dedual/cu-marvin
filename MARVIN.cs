@@ -35,26 +35,12 @@ namespace MARVIN
     /// </summary>
     public class MARVIN : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager graphics;
-
-        Scene scene;
-        MarkerNode groundMarkerNode, toolbar1MarkerNode;
-        List<GeometryNode> buildings;
-        TransformNode parentTrans;
-        TransformNode toolBar1OccluderTransNode;
-        GeometryNode pointerTip;
-        GeometryNode pointerSegment;
-        GeometryNode toolbar1Node;
-        Material pointerMaterial;
-        Vector4 ORIGIN = new Vector4(0, 0, 0, 1);
-        String selectedBuildingName = null;
-
-        float y_shift = -62;
-        float x_shift = -28.0f;
+        static GlobalVariables global = new GlobalVariables();
+        static Pointer pointer = new Pointer(ref global);
 
         public MARVIN()
         {
-            graphics = new GraphicsDeviceManager(this);
+            global.graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
@@ -67,20 +53,20 @@ namespace MARVIN
         protected override void Initialize()
         {
             // Initialize the GoblinXNA framework
-            State.InitGoblin(graphics, Content, "manhattanville.xml");
+            State.InitGoblin(global.graphics, Content, "manhattanville.xml");
 
             // Initialize the scene graph
-            scene = new Scene(this);
+            global.scene = new Scene(this);
 
             // Use the newton physics engine to perform collision detection
-            scene.PhysicsEngine = new NewtonPhysics();
+            global.scene.PhysicsEngine = new NewtonPhysics();
 
             // Set up optical marker tracking
             // Note that we don't create our own camera when we use optical marker
             // tracking. It'll be created automatically
             SetupMarkerTracking();
 
-            createPointer();
+            pointer.createPointer();
 
             // Set up the lights used in the scene
             CreateLights();
@@ -115,7 +101,7 @@ namespace MARVIN
             LightNode lightNode = new LightNode();
             lightNode.LightSources.Add(lightSource);
 
-            scene.RootNode.AddChild(lightNode);
+            global.scene.RootNode.AddChild(lightNode);
         }
 
         private void SetupMarkerTracking()
@@ -133,7 +119,7 @@ namespace MARVIN
 
             // Add this video capture device to the scene so that it can be used for
             // the marker tracker
-            scene.AddVideoCaptureDevice(captureDevice);
+            global.scene.AddVideoCaptureDevice(captureDevice);
 
             // Create a optical marker tracker that uses ARTag library
             ARTagTracker tracker = new ARTagTracker();
@@ -141,68 +127,20 @@ namespace MARVIN
             tracker.InitTracker(638.052f, 633.673f, captureDevice.Width,
                 captureDevice.Height, false, "manhattanville.cf");
 
-            scene.MarkerTracker = tracker;
+            global.scene.MarkerTracker = tracker;
 
             // Create a marker node to track the ground marker arrays
-            groundMarkerNode = new MarkerNode(scene.MarkerTracker, "ground");
-            scene.RootNode.AddChild(groundMarkerNode);
+            global.groundMarkerNode = new MarkerNode(global.scene.MarkerTracker, "ground");
+            global.scene.RootNode.AddChild(global.groundMarkerNode);
 
             // Create a marker node to track a toolbar marker array. Since we expect that the 
             // toolbar marker array will move a lot, we use a large smoothing alpha.
-            toolbar1MarkerNode = new MarkerNode(scene.MarkerTracker, "toolbar1");
-            toolbar1MarkerNode.Smoother = new DESSmoother(0.8f, 0.8f);
-            scene.RootNode.AddChild(toolbar1MarkerNode);
+            global.toolbar1MarkerNode = new MarkerNode(global.scene.MarkerTracker, "toolbar1");
+            global.toolbar1MarkerNode.Smoother = new DESSmoother(0.8f, 0.8f);
+            global.scene.RootNode.AddChild(global.toolbar1MarkerNode);
 
             // Display the camera image in the background
-            scene.ShowCameraImage = true;
-        }
-
-        private void createPointer()
-        {
-            toolbar1Node = new GeometryNode("Toolbar1");
-            toolbar1Node.Model = new Box(18, 28, 0.1f); //I think toolbar itself is 20x8
-            // Set this toolbar model to act as an occluder so that it appears transparent
-            toolbar1Node.IsOccluder = true;
-            // Make the toolbar model to receive shadow casted by other objects with
-            // CastShadows set to true
-            toolbar1Node.Model.ReceiveShadows = true;
-            Material toolbar1Material = new Material();
-            toolbar1Material.Diffuse = Color.Gray.ToVector4();
-            toolbar1Material.Specular = Color.White.ToVector4();
-            toolbar1Material.SpecularPower = 20;
-            toolbar1Node.Material = toolbar1Material;
-            toolBar1OccluderTransNode = new TransformNode();
-            toolBar1OccluderTransNode.Translation = new Vector3(3, 10, 0);
-            toolbar1MarkerNode.AddChild(toolBar1OccluderTransNode);
-            toolBar1OccluderTransNode.AddChild(toolbar1Node);
-
-            //Now we create the 3D arrow pointer on top of toolbar 1
-            TransformNode pointerTipTransNode = new TransformNode();
-            float pointerConeHeight = 3.0f;
-            Matrix pointerTipRotation = (Matrix.CreateRotationX((float)Math.PI));
-            pointerTipTransNode.Rotation = Quaternion.CreateFromRotationMatrix(pointerTipRotation);
-            pointerTipTransNode.Translation = new Vector3(4.0f, -3.0f, 1.3f);
-            pointerTip = new GeometryNode("Pointer Tip");
-            pointerTip.Model = new Cylinder(1.8f, 0.05f, pointerConeHeight, 12);
-            pointerMaterial = new Material();
-            pointerMaterial.Emissive = Color.Red.ToVector4();
-            pointerTip.Material = pointerMaterial;
-
-            pointerSegment = new GeometryNode("Pointer Segment");
-            pointerSegment.Model = new Cylinder(1.0f, 1.0f, 2.4f * pointerConeHeight, 12);
-            TransformNode pointerSegmentTransNode = new TransformNode();
-            pointerSegmentTransNode.Translation = new Vector3(0.0f, -3.6f, 0.0f);
-            pointerSegment.Material = pointerMaterial;
-            toolbar1MarkerNode.AddChild(pointerTipTransNode);
-            pointerTipTransNode.AddChild(pointerTip);
-            pointerSegmentTransNode.AddChild(pointerSegment);
-            pointerTipTransNode.AddChild(pointerSegmentTransNode);
-
-            // Create a marker node to track a toolbar marker array. Since we expect that the 
-            // toolbar marker array will move a lot, we use a large smoothing alpha.
-            toolbar1MarkerNode = new MarkerNode(scene.MarkerTracker, "toolbar1");
-            toolbar1MarkerNode.Smoother = new DESSmoother(0.8f, 0.8f);
-            scene.RootNode.AddChild(toolbar1MarkerNode);
+            global.scene.ShowCameraImage = true;
         }
 
         private void CreateTerrain(float factor)
@@ -267,17 +205,17 @@ namespace MARVIN
                 {
                     index = i * 7 + j;
 
-                    verts[index].Position = new Vector3(j * y_gap + y_shift, i * x_gap + x_shift, 
+                    verts[index].Position = new Vector3(j * y_gap + global.y_shift, i * x_gap + global.x_shift, 
                         terrain_heights[j][i]);
                     verts[index].TextureCoordinate = new Vector2(j * tu_gap, 1 - i * tv_gap);
                     verts[index].Normal = Vector3.UnitZ;
                 }
             }
 
-            terrain.VertexBuffer = new VertexBuffer(graphics.GraphicsDevice,
+            terrain.VertexBuffer = new VertexBuffer(global.graphics.GraphicsDevice,
                 VertexPositionNormalTexture.SizeInBytes * 35, BufferUsage.None);
             terrain.SizeInBytes = VertexPositionNormalTexture.SizeInBytes;
-            terrain.VertexDeclaration = new VertexDeclaration(graphics.GraphicsDevice,
+            terrain.VertexDeclaration = new VertexDeclaration(global.graphics.GraphicsDevice,
                 VertexPositionNormalTexture.VertexElements);
             terrain.VertexBuffer.SetData(verts);
             terrain.NumberOfVertices = 35;
@@ -302,7 +240,7 @@ namespace MARVIN
                 }
             }
 
-            terrain.IndexBuffer = new IndexBuffer(graphics.GraphicsDevice, typeof(short), indices.Length,
+            terrain.IndexBuffer = new IndexBuffer(global.graphics.GraphicsDevice, typeof(short), indices.Length,
                 BufferUsage.WriteOnly);
             terrain.IndexBuffer.SetData(indices);
 
@@ -327,7 +265,7 @@ namespace MARVIN
             terrainTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
                 MathHelper.PiOver2);
 
-            groundMarkerNode.AddChild(terrainTransNode);
+            global.groundMarkerNode.AddChild(terrainTransNode);
             terrainTransNode.AddChild(terrainNode);
 
             CreateSkirf(terrain_heights, terrainTransNode);
@@ -346,47 +284,47 @@ namespace MARVIN
 
             for (int i = 0; i < 7; i++)
             {
-                verts[index].Position = new Vector3(i * y_gap + y_shift, x_shift, terrainHeights[i][0]);
+                verts[index].Position = new Vector3(i * y_gap + global.y_shift, global.x_shift, terrainHeights[i][0]);
                 verts[index].Normal = Vector3.UnitY;
                 index++;
 
-                verts[index].Position = new Vector3(i * y_gap + y_shift, x_shift, 0);
+                verts[index].Position = new Vector3(i * y_gap + global.y_shift, global.x_shift, 0);
                 verts[index].Normal = Vector3.UnitY;
                 index++;
 
-                verts[index].Position = new Vector3((6 - i) * y_gap + y_shift, 71.1f + x_shift, 
+                verts[index].Position = new Vector3((6 - i) * y_gap + global.y_shift, 71.1f + global.x_shift, 
                     terrainHeights[6-i][4]);
                 verts[index].Normal = -Vector3.UnitY;
                 index++;
 
-                verts[index].Position = new Vector3((6 - i) * y_gap + y_shift, 71.1f + x_shift, 0);
+                verts[index].Position = new Vector3((6 - i) * y_gap + global.y_shift, 71.1f + global.x_shift, 0);
                 verts[index].Normal = -Vector3.UnitY;
                 index++;
             }
 
             for (int i = 0; i < 5; i++)
             {
-                verts[index].Position = new Vector3(y_shift, (4 - i) * x_gap + x_shift, terrainHeights[0][(4 - i)]);
+                verts[index].Position = new Vector3(global.y_shift, (4 - i) * x_gap + global.x_shift, terrainHeights[0][(4 - i)]);
                 verts[index].Normal = Vector3.UnitX;
                 index++;
 
-                verts[index].Position = new Vector3(y_shift, (4 - i) * x_gap + x_shift, 0);
+                verts[index].Position = new Vector3(global.y_shift, (4 - i) * x_gap + global.x_shift, 0);
                 verts[index].Normal = Vector3.UnitX;
                 index++;
 
-                verts[index].Position = new Vector3(120.0f + y_shift, i * x_gap + x_shift, terrainHeights[6][i]);
+                verts[index].Position = new Vector3(120.0f + global.y_shift, i * x_gap + global.x_shift, terrainHeights[6][i]);
                 verts[index].Normal = -Vector3.UnitX;
                 index++;
 
-                verts[index].Position = new Vector3(120.0f + y_shift, i * x_gap + x_shift, 0);
+                verts[index].Position = new Vector3(120.0f + global.y_shift, i * x_gap + global.x_shift, 0);
                 verts[index].Normal = -Vector3.UnitX;
                 index++;
             }
 
-            skirf.VertexBuffer = new VertexBuffer(graphics.GraphicsDevice,
+            skirf.VertexBuffer = new VertexBuffer(global.graphics.GraphicsDevice,
                 VertexPositionNormal.SizeInBytes * 48, BufferUsage.None);
             skirf.SizeInBytes = VertexPositionNormal.SizeInBytes;
-            skirf.VertexDeclaration = new VertexDeclaration(graphics.GraphicsDevice,
+            skirf.VertexDeclaration = new VertexDeclaration(global.graphics.GraphicsDevice,
                 VertexPositionNormal.VertexElements);
             skirf.VertexBuffer.SetData(verts);
             skirf.NumberOfVertices = 48;
@@ -417,7 +355,7 @@ namespace MARVIN
                 }
             }
 
-            skirf.IndexBuffer = new IndexBuffer(graphics.GraphicsDevice, typeof(short), indices.Length,
+            skirf.IndexBuffer = new IndexBuffer(global.graphics.GraphicsDevice, typeof(short), indices.Length,
                 BufferUsage.WriteOnly);
             skirf.IndexBuffer.SetData(indices);
 
@@ -445,7 +383,7 @@ namespace MARVIN
                 FileAccess.Read);
             StreamReader sr = new StreamReader(file);
 
-            buildings = new List<GeometryNode>();
+            global.buildings = new List<GeometryNode>();
             ModelLoader loader = new ModelLoader();
 
             float scale = 0.00728f;
@@ -459,10 +397,10 @@ namespace MARVIN
                 // Skip the first line which has column names
                 sr.ReadLine();
 
-                parentTrans = new TransformNode();
-                parentTrans.Translation = new Vector3(-12.5f, -15.69f, 0);
-                parentTrans.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, 119 * MathHelper.Pi / 180);
-                groundMarkerNode.AddChild(parentTrans);
+                global.parentTrans = new TransformNode();
+                global.parentTrans.Translation = new Vector3(-12.5f, -15.69f, 0);
+                global.parentTrans.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, 119 * MathHelper.Pi / 180);
+                global.groundMarkerNode.AddChild(global.parentTrans);
 
                 while (!sr.EndOfStream)
                 {
@@ -477,7 +415,7 @@ namespace MARVIN
                         building.AddToPhysicsEngine = true;
                         building.Physics.Shape = ShapeType.Box;
 
-                        buildings.Add(building);
+                        global.buildings.Add(building);
 
                         zRot = (float)Double.Parse(chunks[1]);
                         x = (float)Double.Parse(chunks[2]);
@@ -498,7 +436,7 @@ namespace MARVIN
 
                         building.Material = buildingMaterial;
 
-                        parentTrans.AddChild(transNode);
+                        global.parentTrans.AddChild(transNode);
                         transNode.AddChild(building);
                     }
                 }
@@ -517,7 +455,7 @@ namespace MARVIN
             FileStream file = new FileStream("buildings_detailed.csv", FileMode.Open, FileAccess.Read);
             StreamReader sr = new StreamReader(file);
 
-            buildings = new List<GeometryNode>();
+            global.buildings = new List<GeometryNode>();
             ModelLoader loader = new ModelLoader();
 
             float scale = 0.0073f;
@@ -531,11 +469,11 @@ namespace MARVIN
                 // Skip the first line which has column names
                 sr.ReadLine();
 
-                parentTrans = new TransformNode();
-                parentTrans.Scale = Vector3.One * scale;
-                parentTrans.Translation = new Vector3(-33.5f, -54.25f, 0);
-                parentTrans.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
-                groundMarkerNode.AddChild(parentTrans);
+                global.parentTrans = new TransformNode();
+                global.parentTrans.Scale = Vector3.One * scale;
+                global.parentTrans.Translation = new Vector3(-33.5f, -54.25f, 0);
+                global.parentTrans.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
+                global.groundMarkerNode.AddChild(global.parentTrans);
 
                 while (!sr.EndOfStream)
                 {
@@ -550,7 +488,7 @@ namespace MARVIN
                         building.AddToPhysicsEngine = true;
                         building.Physics.Shape = ShapeType.Box;
 
-                        buildings.Add(building);
+                        global.buildings.Add(building);
 
                         zRot = (float)Double.Parse(chunks[1]);
                         x = (float)Double.Parse(chunks[2]);
@@ -570,7 +508,7 @@ namespace MARVIN
 
                         building.Material = buildingMaterial;
 
-                        parentTrans.AddChild(transNode);
+                        global.parentTrans.AddChild(transNode);
                         transNode.AddChild(building);
                     }
                 }
@@ -601,9 +539,9 @@ namespace MARVIN
         protected override void Draw(GameTime gameTime)
         {
             // If the toolbar marker array is detected
-            if (toolbar1MarkerNode.MarkerFound)
+            if (global.toolbar1MarkerNode.MarkerFound)
             {
-                performPointing();
+                pointer.performPointing();
             }
             else
             {
@@ -613,53 +551,6 @@ namespace MARVIN
             base.Draw(gameTime);
         }
 
-        private void performPointing()
-        {
-            Vector4 homog_pointerWorldCoords = Vector4.Transform(ORIGIN, pointerTip.WorldTransformation * toolbar1MarkerNode.WorldTransformation);
-            Vector3 inhomog_pointerWorldCoords = new Vector3(homog_pointerWorldCoords.X, homog_pointerWorldCoords.Y, homog_pointerWorldCoords.Z);
-            Vector3 homog_pointerScreenCoords = graphics.GraphicsDevice.Viewport.Project(inhomog_pointerWorldCoords, 
-                State.ProjectionMatrix, State.ViewMatrix, Matrix.Identity);
-
-            //GoblinXNA.UI.Notifier.AddMessage("Pointer Screen Coords: " + homog_pointerScreenCoords);
-
-            // 0 means on the near clipping plane, and 1 means on the far clipping plane
-            Vector3 nearSource = new Vector3(homog_pointerScreenCoords.X, homog_pointerScreenCoords.Y, 0);
-            Vector3 farSource = new Vector3(homog_pointerScreenCoords.X, homog_pointerScreenCoords.Y, 1);
-
-            // Now convert the near and far source to actual near and far 3D points based on our eye location
-            // and view frustum
-            Vector3 nearPoint = graphics.GraphicsDevice.Viewport.Unproject(nearSource,
-                State.ProjectionMatrix, State.ViewMatrix, Matrix.Identity);
-            Vector3 farPoint = graphics.GraphicsDevice.Viewport.Unproject(farSource,
-                State.ProjectionMatrix, State.ViewMatrix, Matrix.Identity);
-
-            // Have the physics engine intersect the pick ray defined by the nearPoint and farPoint with
-            // the physics objects in the scene (which we have set up to approximate the model geometry).
-            List<PickedObject> pickedObjects = ((NewtonPhysics)scene.PhysicsEngine).PickRayCast(
-                nearPoint, farPoint);
-
-            // If one or more objects intersect with our ray vector
-            if (pickedObjects.Count > 0)
-            {
-                // Since PickedObject can be compared (which means it implements IComparable), we can sort it in 
-                // the order of closest intersected object to farthest intersected object
-                pickedObjects.Sort();
-
-                // We only care about the closest picked object for now, so we'll simply display the name 
-                // of the closest picked object whose container is a geometry node
-                selectedBuildingName = ((GeometryNode)pickedObjects[0].PickedPhysicsObject.Container).Name;
-                //label = selectedBuildingName + " is selected";
-
-                //previouslySelectedBuilding = selectedBuilding;
-                //selectedBuilding = (GeometryNode)scene.GetNode(selectedBuildingName);
-            }
-            else
-            {
-                //label = "Nothing is selected";
-                //previouslySelectedBuilding = selectedBuilding;
-                selectedBuildingName = null;
-                //selectedBuilding = null;
-            }
-        }
+        
     }
 }
