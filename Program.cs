@@ -9,7 +9,7 @@ namespace Manhattanville
         /// </summary>
         static void Main(string[] args)
         {
-            using (Manhattanville game = new Manhattanville())
+            using (MARVIN game = new MARVIN())
             {
                 game.Run();
             }
