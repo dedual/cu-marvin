@@ -17,6 +17,7 @@ using GoblinXNA.SceneGraph;
 using Model = GoblinXNA.Graphics.Model;
 using GoblinXNA.Graphics.Geometry;
 using GoblinXNA.Device.Generic;
+using GoblinXNA.Device.Util;
 using GoblinXNA.Physics;
 using GoblinXNA.Helpers;
 
@@ -32,19 +33,22 @@ namespace Manhattanville
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Manhattanville : Microsoft.Xna.Framework.Game
+    public class MARVIN : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
 
         Scene scene;
-        MarkerNode groundMarkerNode;
+        MarkerNode groundMarkerNode, toolbar1MarkerNode;
         List<GeometryNode> buildings;
         TransformNode parentTrans;
+        GeometryNode pointerTip;
+        GeometryNode pointerSegment;
+        Material pointerMaterial;
 
         float y_shift = -62;
         float x_shift = -28.0f;
 
-        public Manhattanville()
+        public MARVIN()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -137,6 +141,54 @@ namespace Manhattanville
 
             // Display the camera image in the background
             scene.ShowCameraImage = true;
+        }
+
+        private void createPointer()
+        {
+            GeometryNode toolbar1Node = new GeometryNode("Toolbar1");
+            toolbar1Node.Model = new Box(18, 28, 0.1f); //I think toolbar itself is 20x8
+            // Set this toolbar model to act as an occluder so that it appears transparent
+            toolbar1Node.IsOccluder = true;
+            // Make the toolbar model to receive shadow casted by other objects with
+            // CastShadows set to true
+            toolbar1Node.Model.ReceiveShadows = true;
+            Material toolbar1Material = new Material();
+            toolbar1Material.Diffuse = Color.Gray.ToVector4();
+            toolbar1Material.Specular = Color.White.ToVector4();
+            toolbar1Material.SpecularPower = 20;
+            toolbar1Node.Material = toolbar1Material;
+            TransformNode toolBar1OccluderTransNode = new TransformNode();
+            toolBar1OccluderTransNode.Translation = new Vector3(3, 10, 0);
+            toolbar1MarkerNode.AddChild(toolBar1OccluderTransNode);
+            toolBar1OccluderTransNode.AddChild(toolbar1Node);
+
+            //Now we create the 3D arrow pointer on top of toolbar 1
+            TransformNode pointerTipTransNode = new TransformNode();
+            float pointerConeHeight = 3.0f;
+            Matrix pointerTipRotation = (Matrix.CreateRotationX((float)Math.PI));
+            pointerTipTransNode.Rotation = Quaternion.CreateFromRotationMatrix(pointerTipRotation);
+            pointerTipTransNode.Translation = new Vector3(4.0f, -3.0f, 1.3f);
+            pointerTip = new GeometryNode("Pointer Tip");
+            pointerTip.Model = new Cylinder(1.8f, 0.05f, pointerConeHeight, 12);
+            pointerMaterial = new Material();
+            pointerMaterial.Emissive = Color.Red.ToVector4();
+            pointerTip.Material = pointerMaterial;
+
+            pointerSegment = new GeometryNode("Pointer Segment");
+            pointerSegment.Model = new Cylinder(1.0f, 1.0f, 2.4f * pointerConeHeight, 12);
+            TransformNode pointerSegmentTransNode = new TransformNode();
+            pointerSegmentTransNode.Translation = new Vector3(0.0f, -3.6f, 0.0f);
+            pointerSegment.Material = pointerMaterial;
+            toolbar1MarkerNode.AddChild(pointerTipTransNode);
+            pointerTipTransNode.AddChild(pointerTip);
+            pointerSegmentTransNode.AddChild(pointerSegment);
+            pointerTipTransNode.AddChild(pointerSegmentTransNode);
+
+            // Create a marker node to track a toolbar marker array. Since we expect that the 
+            // toolbar marker array will move a lot, we use a large smoothing alpha.
+            toolbar1MarkerNode = new MarkerNode(scene.MarkerTracker, "toolbar1");
+            toolbar1MarkerNode.Smoother = new DESSmoother(0.8f, 0.8f);
+            scene.RootNode.AddChild(toolbar1MarkerNode);
         }
 
         private void CreateTerrain(float factor)
