@@ -110,9 +110,36 @@ namespace MARVIN
         {
             buildingsInBlocks.Add(_building);
             blockTransNode.AddChild(_building.getBuildingNode());
-           blockTransNode.Scale = new Vector3(blockTransNode.Scale.X*1.0f, blockTransNode.Scale.Y*1.0f, blockTransNode.Scale.Z*1.0f);
-           blockNode.AddChild(blockTransNode);
         }
+        public Building getBuilding(string address)
+        {
+            Building temp;
+            temp.setBuildingName("Error");
+
+            foreach (Building b in buildingsInBlocks)
+            {
+                if(b.getBuildingName() == address)
+                {
+                    return b;
+                }
+            }
+            return temp;
+        }
+
+        public bool removeBuilding(string address)
+        {
+            foreach (Building b in buildingsInBlocks)
+            {
+                if (b.getBuildingName() == address)
+                {
+                    buildingsInBlocks.Remove(b);
+                    blockTransNode.RemoveChild(b.getBuildingNode());
+                    return true;
+                }
+            }
+            return false;
+        }
+
         //Detect presence of our marker
         public bool isMarkerPresent()
         {
@@ -134,6 +161,10 @@ namespace MARVIN
         public void setScaling(float x, float y, float z)
         {
             blockTransNode.Scale = new Vector3(blockTransNode.Scale.X * x, blockTransNode.Scale.Y * y, blockTransNode.Scale.Z * z);
+        }
+        public void setRotation(float xDegrees, float yDegrees, float zDegrees)
+        {
+            blockTransNode.Rotation = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(xDegrees),MathHelper.ToRadians(yDegrees),MathHelper.ToRadians(zDegrees)) * blockTransNode.Rotation;
         }
         public void placeBuildings()
         {

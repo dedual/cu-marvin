@@ -39,7 +39,7 @@ namespace MARVIN
         static Pointer pointer;
         static Notebook notebook;
 
-        Block block1;
+        Block block1, block2;
 
         public MARVIN()
         {
@@ -164,20 +164,35 @@ namespace MARVIN
             if (global.outdoors)
             {
 
-                string[] buildingSet = new string[] { "3221_Broadway", "3229_Broadway", "3233_Broadway", "613_W129st", "623_W129st", "627_W129st", "651_W125st", "663_W125st", "635_W125st", "633_W125st", "628_W125st", "619_W125st", "614_W125st" };//, "564_Riverside","603_W130st","615_W130st","617_W130st","625_W130st","631_W130st","632_W130st","641_W130st","604_W131st","605_W131st","609_W131st","614_W131st","615_W131st","620_W131st","622_W131st","624_W131st","630_W131st","635_W131st","636_W131st","638_W131st","641_W131st","653_W131st","640_W132st","2283_Joe_Dimaggio_Highway","2291_Joe_Dimaggio_Highway","2293_Joe_Dimaggio_Highway","2307_Joe_Dimaggio_Highway","2311_Joe_Dimaggio_Highway","2321_Joe_Dimaggio_Highway"  };
+                string[] buildingSetBlock1 = new string[] { "3221_Broadway", "3229_Broadway", "3233_Broadway", "613_W129st", "623_W129st", "627_W129st", "651_W125st", "663_W125st", "635_W125st", "633_W125st", "628_W125st", "619_W125st"};//, "564_Riverside","603_W130st","615_W130st","617_W130st","625_W130st","631_W130st","632_W130st","641_W130st","604_W131st","605_W131st","609_W131st","614_W131st","615_W131st","620_W131st","622_W131st","624_W131st","630_W131st","635_W131st","636_W131st","638_W131st","641_W131st","653_W131st","640_W132st","2283_Joe_Dimaggio_Highway","2291_Joe_Dimaggio_Highway","2293_Joe_Dimaggio_Highway","2307_Joe_Dimaggio_Highway","2311_Joe_Dimaggio_Highway","2321_Joe_Dimaggio_Highway"  };
                 MarkerNode block1Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar6");
                 block1Marker.Smoother = new DESSmoother(0.8f, 0.8f);
 
-                block1 = new Block(block1Marker, buildingSet);
+                block1 = new Block(block1Marker, buildingSetBlock1);
                 //    block1.setMarkerNode(block1Marker);
                 //    Building block1TestBuilding = new Building("3221_Broadway");
                 //    block1TestBuilding.loadBuildingModel(true, factor);
 
                 //     block1.addBuilding(block1TestBuilding);
                 block1.setScaling(3.0f, 3.0f, 3.0f);
-                block1.setTranslation(0.0f, -224.25f, -210.0f);
-
+                block1.setTranslation(30.0f, -244.25f, -210.0f);
+                block1.setRotation(10.0f, 0.0f, 0.0f);
                 global.scene.RootNode.AddChild(block1.getMarkerNode());
+
+                string[] buildingSetBlock2 = new string[] { "564_Riverside"};
+                MarkerNode block2Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar3");
+                block2Marker.Smoother = new DESSmoother(0.8f, 0.8f);
+
+                block2 = new Block(block2Marker, buildingSetBlock2);
+                //    block1.setMarkerNode(block1Marker);
+                //    Building block1TestBuilding = new Building("3221_Broadway");
+                //    block1TestBuilding.loadBuildingModel(true, factor);
+
+                //     block1.addBuilding(block1TestBuilding);
+                block2.setScaling(3.0f, 3.0f, 3.0f);
+                block2.setTranslation(30.0f, -244.25f, -210.0f);
+                block2.setRotation(10.0f, 0.0f, 0.0f);
+                global.scene.RootNode.AddChild(block2.getMarkerNode());
             }
             else //We're indoors, setup differently
             {
