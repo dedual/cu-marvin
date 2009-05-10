@@ -174,8 +174,7 @@ namespace MARVIN
                             buildingGeomNode.Model = (Model)loader.Load("", "Detailed/" + chunks[0]);
                             buildingGeomNode.AddToPhysicsEngine = true;
                             buildingGeomNode.Physics.Shape = ShapeType.Box;
-
-                          //  buildings.Add(building);
+                            buildingGeomNode.Model.CastShadows = true;
 
                             zRot = (float)Double.Parse(chunks[1]);
                             x = (float)Double.Parse(chunks[2]);
