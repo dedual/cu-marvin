@@ -45,6 +45,7 @@ namespace MARVIN
         public TransformNode toolBar1OccluderTransNode;
         public TransformNode notebookBoxTransNode;
 
+
         public GeometryNode pointerTip;
         public GeometryNode pointerSegment;
         public GeometryNode toolbar1Node;

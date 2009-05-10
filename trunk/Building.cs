@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 
 using Microsoft.Xna.Framework;
@@ -35,6 +36,7 @@ namespace MARVIN
         //Building properties
         System.String buildingName; //Building Name
         System.String buildingInfo; //Building info
+        List<Attribute> attributes;
 
         //Constructors
         public Building()
@@ -51,6 +53,58 @@ namespace MARVIN
             buildingMaterial = new Material();
             buildingTransNode = new TransformNode();
         }
+
+        public Attribute getAttribute(String attributeName)
+        {
+            for (int i = 0; i < attributes.Count; i++)
+            {
+                if (attributes[i].name.CompareTo(attributeName) == 0)
+                {
+                    return attributes[i];
+                }
+            }
+            return null;
+        }
+
+        public int getAttributeValue(String attributeName)
+        {
+            Attribute a = getAttribute(attributeName);
+            return a.value;
+        }
+
+        public void setAttribute(Attribute a)
+        {
+            for (int i = 0; i < attributes.Count; i++)
+            {
+                if (attributes[i].name.CompareTo(a.name) == 0)
+                {
+                    attributes[i] = a;
+                    return;
+                }
+            }
+
+            attributes.Add(a);
+            attributes.Sort();
+        }
+
+        public void setAttribute(String name, int value, int minVal, int maxVal)
+        {
+            Attribute a = new Attribute(name, value, minVal, maxVal);
+            setAttribute(a);
+        }
+
+        public void setAttributeValue(String attributeName, int val)
+        {
+            for (int i = 0; i < attributes.Count; i++)
+            {
+                if (attributes[i].name.CompareTo(attributeName) == 0)
+                {
+                    attributes[i].value = val;
+                    return;
+                }
+            }
+        }
+
         public GeometryNode getBuildingNode()
         {
             return buildingGeomNode;

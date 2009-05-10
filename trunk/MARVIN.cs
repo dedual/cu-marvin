@@ -130,8 +130,8 @@ namespace MARVIN
             // on the device driver.  The values set here will work for a Microsoft VX 6000, 
             // and many other webcams.
             DirectShowCapture captureDevice = new DirectShowCapture();
-            captureDevice.InitVideoCapture(2, FrameRate._30Hz, Resolution._640x480,ImageFormat.R8G8B8_24, false);
-            //captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
+            //captureDevice.InitVideoCapture(2, FrameRate._30Hz, Resolution._640x480,ImageFormat.R8G8B8_24, false);
+            captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
 
             // Add this video capture device to the scene so that it can be used for
             // the marker tracker

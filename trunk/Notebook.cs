@@ -43,14 +43,6 @@ namespace MARVIN
 
         public void createNotebook()
         {
-            // Create a geometry node with a model of a box for the notebook 
-            //global.notebookBoxNode = new GeometryNode("Box");
-            //global.notebookBoxNode.Model = new Box(50, 100, 10);
-
-            // Loads a textured model of a notebook
-            //ModelLoader loader = new ModelLoader();
-            //Model notebookModel = (Model)loader.Load("", "opened_book");
-
             // Create a geometry node of a loaded notebook model
             global.notebookBoxNode = new GeometryNode("Notebook");
             global.notebookBoxNode.Model = global.notebookModel;
@@ -69,20 +61,14 @@ namespace MARVIN
             global.notebookBoxNode.Physics.Pickable = false;
             global.notebookBoxNode.AddToPhysicsEngine = true;
 
-            // Create a material to apply to the box model
-            //global.notebookTopMaterial = new Material();
-            //global.notebookTopMaterial.Diffuse = Color.White.ToVector4();
-            //global.notebookTopMaterial.Specular = Color.White.ToVector4();
-            //global.notebookTopMaterial.SpecularPower = 10;
-            //global.notebookTopMaterial.Texture = tex;
-            //Console.WriteLine("Root directory: " + global.Content.RootDirectory);
-            //Console.WriteLine("Content: " + global.Content.ToString());
-
-            //global.notebookBoxNode.Material = global.notebookTopMaterial;
-
             // Now add the box nodes to the scene graph in the appropriate order
             global.groundMarkerNode.AddChild(global.notebookBoxTransNode);
             global.notebookBoxTransNode.AddChild(global.notebookBoxNode);
+
+            /*
+             *  Now it's time to create the box buttons on the right potion of the notebook
+             */
+
         }
     }
 }
