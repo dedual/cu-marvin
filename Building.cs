@@ -39,11 +39,17 @@ namespace MARVIN
         //Constructors
         public Building()
         {
-
+            buildingGeomNode = new GeometryNode();
+            buildingMaterial = new Material();
+            buildingTransNode = new TransformNode();
         }
         public Building(System.String name)
         {
             buildingName = name;
+
+            buildingGeomNode = new GeometryNode();
+            buildingMaterial = new Material();
+            buildingTransNode = new TransformNode();
         }
         public GeometryNode getBuildingNode()
         {
@@ -90,7 +96,6 @@ namespace MARVIN
             sr = new StreamReader(file);
             }
             ModelLoader loader = new ModelLoader();
-            float scale = 0.0073f; //This could change
             float zRot, x, y, z;
             String[] chunks;
             char[] seps = { ',' };
@@ -123,11 +128,11 @@ namespace MARVIN
                             y = (float)Double.Parse(chunks[3]);
                             z = (float)Double.Parse(chunks[4]);
 
-                            buildingTransNode = new TransformNode();
-                            buildingTransNode.Translation = new Vector3(x, y, z * factor);
-                            buildingTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
-                                (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
-                                MathHelper.PiOver2);
+             //               buildingTransNode = new TransformNode();
+             //               buildingTransNode.Translation = new Vector3(x, y, z * factor);
+             //               buildingTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
+             //                   (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
+             //                   MathHelper.PiOver2);
 
                             buildingMaterial = new Material();
                             buildingMaterial.Diffuse = Color.White.ToVector4();
@@ -135,8 +140,6 @@ namespace MARVIN
                             buildingMaterial.SpecularPower = 10;
 
                             buildingGeomNode.Material = buildingMaterial;
-
-                            buildingTransNode.AddChild(buildingGeomNode);
                         }
                     }
                 }

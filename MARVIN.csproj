@@ -90,6 +90,7 @@
     <Compile Include="Building.cs" />
     <Compile Include="GlobalVariables.cs" />
     <Compile Include="Ground.cs" />
+    <Compile Include="Pointer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="MARVIN.cs" />
