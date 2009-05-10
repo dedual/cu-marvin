@@ -34,6 +34,8 @@ namespace MARVIN
 {
     public class GlobalVariables
     {
+        public bool outdoors;
+
         public GraphicsDeviceManager graphics; //Graphics Device
         //public ContentManager Content;
 

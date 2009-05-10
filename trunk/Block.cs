@@ -47,7 +47,7 @@ namespace MARVIN
             float scale = 0.0073f;
             blockTransNode = new TransformNode();
             blockTransNode.Scale = Vector3.One * scale;
-            blockTransNode.Translation = new Vector3(0.0f, -64.25f, 0.0f);
+ //           blockTransNode.Translation = new Vector3(0.0f, -64.25f, 0.0f);
  //           blockTransNode.Translation = new Vector3(-33.5f, -54.25f, 0);
             blockTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
             blockNode.AddChild(blockTransNode);
@@ -126,6 +126,14 @@ namespace MARVIN
         {
             buildingsInBlocks = buildings;
 
+        }
+        public void setTranslation(float x, float y, float z)
+        {
+            blockTransNode.Translation = new Vector3(x, y, z);
+        }
+        public void setScaling(float x, float y, float z)
+        {
+            blockTransNode.Scale = new Vector3(blockTransNode.Scale.X * x, blockTransNode.Scale.Y * y, blockTransNode.Scale.Z * z);
         }
         public void placeBuildings()
         {

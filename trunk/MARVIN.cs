@@ -70,6 +70,8 @@ namespace MARVIN
             // Use the newton physics engine to perform collision detection
             global.scene.PhysicsEngine = new NewtonPhysics();
 
+            global.outdoors = true;
+
             // Set up optical marker tracking
             // Note that we don't create our own camera when we use optical marker
             // tracking. It'll be created automatically
@@ -81,7 +83,7 @@ namespace MARVIN
             ModelLoader loader = new ModelLoader();
             global.notebookModel = (Model)loader.Load("", "3dm-pad");
             global.notebookModel.UseInternalMaterials = true;
-            notebook.createNotebook();
+//            notebook.createNotebook();
 
             // Set up the lights used in the scene
             CreateLights();
@@ -90,12 +92,12 @@ namespace MARVIN
 
 //            createBuildings(factor);
             // Create 3D terrain on top of the map layout
-            //CreateTerrain(factor);
+            CreateTerrain(factor);
 
             // Load plain buildings
 //            LoadPlainBuildings(factor);
             // Load detailed buildings
-            //LoadDetailedBuildings(factor);
+//            LoadDetailedBuildings(factor);
             createBuildings(factor);
 
             // Show Frames-Per-Second on the screen for debugging
@@ -130,9 +132,7 @@ namespace MARVIN
             // on the device driver.  The values set here will work for a Microsoft VX 6000, 
             // and many other webcams.
             DirectShowCapture captureDevice = new DirectShowCapture();
-            //captureDevice.InitVideoCapture(2, FrameRate._30Hz, Resolution._640x480,ImageFormat.R8G8B8_24, false);
-            captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
-
+            captureDevice.InitVideoCapture(3, FrameRate._30Hz, Resolution._800x600,ImageFormat.R8G8B8_24, false);            //captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
             // Add this video capture device to the scene so that it can be used for
             // the marker tracker
             global.scene.AddVideoCaptureDevice(captureDevice);
@@ -161,17 +161,28 @@ namespace MARVIN
 
         private void createBuildings(float factor)
         {
-            string[] buildingSet = new string[] {"3221_Broadway", "3229_Broadway","3233_Broadway" };
-            MarkerNode block1Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar6");
+            if (global.outdoors)
+            {
 
-            block1 = new Block(block1Marker, buildingSet);
-       //     block1.setMarkerNode(block1Marker);
-       //    Building block1TestBuilding = new Building("3221_Broadway");
-       //     block1TestBuilding.loadBuildingModel(true, factor);
+                string[] buildingSet = new string[] { "3221_Broadway", "3229_Broadway", "3233_Broadway", "613_W129st", "623_W129st", "627_W129st", "651_W125st", "663_W125st", "635_W125st", "633_W125st", "628_W125st", "619_W125st", "614_W125st" };//, "564_Riverside","603_W130st","615_W130st","617_W130st","625_W130st","631_W130st","632_W130st","641_W130st","604_W131st","605_W131st","609_W131st","614_W131st","615_W131st","620_W131st","622_W131st","624_W131st","630_W131st","635_W131st","636_W131st","638_W131st","641_W131st","653_W131st","640_W132st","2283_Joe_Dimaggio_Highway","2291_Joe_Dimaggio_Highway","2293_Joe_Dimaggio_Highway","2307_Joe_Dimaggio_Highway","2311_Joe_Dimaggio_Highway","2321_Joe_Dimaggio_Highway"  };
+                MarkerNode block1Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar6");
+                block1Marker.Smoother = new DESSmoother(0.8f, 0.8f);
 
-       //     block1.addBuilding(block1TestBuilding);
+                block1 = new Block(block1Marker, buildingSet);
+                //    block1.setMarkerNode(block1Marker);
+                //    Building block1TestBuilding = new Building("3221_Broadway");
+                //    block1TestBuilding.loadBuildingModel(true, factor);
 
-            global.scene.RootNode.AddChild(block1.getMarkerNode());
+                //     block1.addBuilding(block1TestBuilding);
+                block1.setScaling(3.0f, 3.0f, 3.0f);
+                block1.setTranslation(0.0f, -224.25f, -210.0f);
+
+                global.scene.RootNode.AddChild(block1.getMarkerNode());
+            }
+            else //We're indoors, setup differently
+            {
+
+            }
         }
 
         private void CreateTerrain(float factor)
