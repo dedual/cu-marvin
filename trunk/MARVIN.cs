@@ -39,6 +39,8 @@ namespace MARVIN
         static Pointer pointer;
         static Notebook notebook;
 
+        Block block1;
+
         public MARVIN()
         {
             Content.RootDirectory = "Content";
@@ -86,13 +88,15 @@ namespace MARVIN
 
             float factor = 135.0f / 1353;
 
+//            createBuildings(factor);
             // Create 3D terrain on top of the map layout
             //CreateTerrain(factor);
 
             // Load plain buildings
-            //LoadPlainBuildings(factor);
+//            LoadPlainBuildings(factor);
             // Load detailed buildings
             //LoadDetailedBuildings(factor);
+            createBuildings(factor);
 
             // Show Frames-Per-Second on the screen for debugging
             State.ShowFPS = true;
@@ -126,9 +130,8 @@ namespace MARVIN
             // on the device driver.  The values set here will work for a Microsoft VX 6000, 
             // and many other webcams.
             DirectShowCapture captureDevice = new DirectShowCapture();
-            //captureDevice.InitVideoCapture(0, FrameRate._30Hz, Resolution._640x480, 
-            //    ImageFormat.R8G8B8_24, false);
-            captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
+            captureDevice.InitVideoCapture(2, FrameRate._30Hz, Resolution._640x480,ImageFormat.R8G8B8_24, false);
+            //captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
 
             // Add this video capture device to the scene so that it can be used for
             // the marker tracker
@@ -154,6 +157,21 @@ namespace MARVIN
 
             // Display the camera image in the background
             global.scene.ShowCameraImage = true;
+        }
+
+        private void createBuildings(float factor)
+        {
+            string[] buildingSet = new string[] {"3221_Broadway", "3229_Broadway","3233_Broadway" };
+            MarkerNode block1Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar6");
+
+            block1 = new Block(block1Marker, buildingSet);
+       //     block1.setMarkerNode(block1Marker);
+       //    Building block1TestBuilding = new Building("3221_Broadway");
+       //     block1TestBuilding.loadBuildingModel(true, factor);
+
+       //     block1.addBuilding(block1TestBuilding);
+
+            global.scene.RootNode.AddChild(block1.getMarkerNode());
         }
 
         private void CreateTerrain(float factor)

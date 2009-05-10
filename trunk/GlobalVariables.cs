@@ -34,16 +34,14 @@ namespace MARVIN
 {
     public class GlobalVariables
     {
-        public GraphicsDeviceManager graphics;
+        public GraphicsDeviceManager graphics; //Graphics Device
         //public ContentManager Content;
 
-        public Scene scene;
-        public MarkerNode groundMarkerNode, toolbar1MarkerNode;
+        public Scene scene; //Scene
+        public MarkerNode groundMarkerNode, toolbar1MarkerNode; //Ground and Pointer Markers
+    //    public MarkerNode block1MarkerNode, block2MarkerNode; //Markers for each block
         public List<GeometryNode> buildings;
-
-        public Texture2D notebookTopTexture;
-
-        public TransformNode parentTrans;
+        public Texture2D notebookTopTexture;        public TransformNode parentTrans;
         public TransformNode toolBar1OccluderTransNode;
         public TransformNode notebookBoxTransNode;
 
