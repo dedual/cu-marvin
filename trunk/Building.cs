@@ -23,16 +23,14 @@ using GoblinXNA.Device.Util;
 using GoblinXNA.Physics;
 using GoblinXNA.Helpers;
 
-namespace Manhattanville
+namespace MARVIN
 {
-    class Building : Microsoft.Xna.Framework.Game
+    public class Building : Microsoft.Xna.Framework.Game
     {
         //Nodes and trackers
-        MarkerNode buildingNode; //Building Marker
         GeometryNode buildingGeomNode; //Geometry Node
         Material buildingMaterial; //Building Material
-        TransformNode buildingTransNode; //Transform node for this building 
-        ARTagTracker _tracker; //ARTracker information
+        TransformNode buildingTransNode; //Transform node for this building.
        
         //Building properties
         System.String buildingName; //Building Name
@@ -47,28 +45,23 @@ namespace Manhattanville
         {
             buildingName = name;
         }
-
-        //Associate building marker with an ARTag
-        public void setupBuildingMarker(int width, int height, System.String markerName)
+        public GeometryNode getBuildingNode()
         {
-            _tracker = new ARTagTracker();
-            //Must modify these parameters
-            _tracker.InitTracker(410.0f, 410.0f, width, height, false, "manhattanville.cf");
-
-            //setup marker
-            buildingNode = new MarkerNode(_tracker, markerName);
-            //buildingMarker.Smoother = new DESSmoother(0.8f, 0.8f); //uncomment, if necessary
+            return buildingGeomNode;
         }
-
-        public MarkerNode getBuildingNode()
+        public TransformNode getBuildingTransNode()
         {
-            return buildingNode;
+            return buildingTransNode;
         }
-
+        public void setBuildingMaterial(Material material)
+        {
+            buildingMaterial = material;
+            buildingGeomNode.Material = buildingMaterial;
+        }
         public void setTransforms(TransformNode thisTransform)
         {
             buildingTransNode = thisTransform;
-            buildingTransNode.AddChild(buildingNode);
+            buildingTransNode.AddChild(buildingGeomNode);
         }
 
         //Get & set building name
@@ -81,14 +74,85 @@ namespace Manhattanville
             buildingName = _name;
         }
 
-        //Detect presence of our marker
-        public bool isMarkerPresent()
+        public void loadBuildingModel(bool plainOrDetailed, float factor)
         {
-            return buildingNode.MarkerFound;
+            FileStream file;
+            StreamReader sr;
+            if(plainOrDetailed)
+            {
+                file = new FileStream("buildings_detailed.csv", FileMode.Open, FileAccess.Read);
+                sr = new StreamReader(file);
+            }
+            else
+            {
+            file = new FileStream("buildings_plain.csv", FileMode.Open,
+                FileAccess.Read);
+            sr = new StreamReader(file);
+            }
+            ModelLoader loader = new ModelLoader();
+            float scale = 0.0073f; //This could change
+            float zRot, x, y, z;
+            String[] chunks;
+            char[] seps = { ',' };
+
+            String s = "";
+            try
+            {
+                // Skip the first line which has column names
+                sr.ReadLine();
+
+                while (!sr.EndOfStream)
+                {
+                    s = sr.ReadLine();
+
+                    if (s.Length > 0)
+                    {
+                        chunks = s.Split(seps);
+
+                        if (chunks[0] == buildingName)
+                        {
+                            buildingGeomNode = new GeometryNode(chunks[0]);
+                            buildingGeomNode.Model = (Model)loader.Load("", "Detailed/" + chunks[0]);
+                            buildingGeomNode.AddToPhysicsEngine = true;
+                            buildingGeomNode.Physics.Shape = ShapeType.Box;
+
+                          //  buildings.Add(building);
+
+                            zRot = (float)Double.Parse(chunks[1]);
+                            x = (float)Double.Parse(chunks[2]);
+                            y = (float)Double.Parse(chunks[3]);
+                            z = (float)Double.Parse(chunks[4]);
+
+                            buildingTransNode = new TransformNode();
+                            buildingTransNode.Translation = new Vector3(x, y, z * factor);
+                            buildingTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
+                                (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
+                                MathHelper.PiOver2);
+
+                            buildingMaterial = new Material();
+                            buildingMaterial.Diffuse = Color.White.ToVector4();
+                            buildingMaterial.Specular = Color.White.ToVector4();
+                            buildingMaterial.SpecularPower = 10;
+
+                            buildingGeomNode.Material = buildingMaterial;
+
+                            buildingTransNode.AddChild(buildingGeomNode);
+                        }
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine("buildings.csv has wrong format: " + s);
+            }
+
+            sr.Close();
+            file.Close();
         }
 
         public void setBuildingOffset()
         {
+
         }
 
     }

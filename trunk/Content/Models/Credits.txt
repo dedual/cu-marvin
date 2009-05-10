@@ -1,0 +1,1 @@
+The p1_wedge.fbx is from the XNA tutorial found on the MSDN website.

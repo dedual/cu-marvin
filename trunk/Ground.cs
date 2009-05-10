@@ -23,7 +23,7 @@ using GoblinXNA.Device.Util;
 using GoblinXNA.Physics;
 using GoblinXNA.Helpers;
 
-namespace Manhattanville
+namespace MARVIN
 {
     class Ground: Microsoft.Xna.Framework.Game
     {
