@@ -35,13 +35,20 @@ namespace MARVIN
     /// </summary>
     public class MARVIN : Microsoft.Xna.Framework.Game
     {
-        static GlobalVariables global = new GlobalVariables();
-        static Pointer pointer = new Pointer(ref global);
+        static GlobalVariables global;
+        static Pointer pointer;
+        static Notebook notebook;
 
         public MARVIN()
         {
-            global.graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            global = new GlobalVariables();
+            global.graphics = new GraphicsDeviceManager(this);
+            //global.Content = this.Content;
+            //global.Content.RootDirectory = "Content";
+
+            pointer = new Pointer(ref global);
+            notebook = new Notebook(ref global);
         }
 
         /// <summary>
@@ -68,18 +75,24 @@ namespace MARVIN
 
             pointer.createPointer();
 
+            //global.notebookTopTexture = Content.Load<Texture2D>("Textures//steve");
+            ModelLoader loader = new ModelLoader();
+            global.notebookModel = (Model)loader.Load("", "3dm-pad");
+            global.notebookModel.UseInternalMaterials = true;
+            notebook.createNotebook();
+
             // Set up the lights used in the scene
             CreateLights();
 
             float factor = 135.0f / 1353;
 
             // Create 3D terrain on top of the map layout
-            CreateTerrain(factor);
+            //CreateTerrain(factor);
 
             // Load plain buildings
             //LoadPlainBuildings(factor);
             // Load detailed buildings
-            LoadDetailedBuildings(factor);
+            //LoadDetailedBuildings(factor);
 
             // Show Frames-Per-Second on the screen for debugging
             State.ShowFPS = true;
@@ -256,7 +269,11 @@ namespace MARVIN
             terrainMaterial.Diffuse = Color.White.ToVector4();
             terrainMaterial.Specular = Color.White.ToVector4();
             terrainMaterial.SpecularPower = 10;
+            //Texture2D mville = Content.Load<Texture2D>("Textures//Manhattanville");
+            //terrainMaterial.Texture = mville;
             terrainMaterial.Texture = Content.Load<Texture2D>("Textures//Manhattanville");
+            //global.notebookTopTexture = mville;
+            //notebook.createNotebook(mville);
 
             terrainNode.Material = terrainMaterial;
 

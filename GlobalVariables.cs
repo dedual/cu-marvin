@@ -35,16 +35,28 @@ namespace MARVIN
     public class GlobalVariables
     {
         public GraphicsDeviceManager graphics;
+        //public ContentManager Content;
 
         public Scene scene;
         public MarkerNode groundMarkerNode, toolbar1MarkerNode;
         public List<GeometryNode> buildings;
+
+        public Texture2D notebookTopTexture;
+
         public TransformNode parentTrans;
         public TransformNode toolBar1OccluderTransNode;
+        public TransformNode notebookBoxTransNode;
+
         public GeometryNode pointerTip;
         public GeometryNode pointerSegment;
         public GeometryNode toolbar1Node;
+        public GeometryNode notebookBoxNode;
+
         public Material pointerMaterial;
+        public Material notebookTopMaterial;
+
+        public Model notebookModel;
+
         public Vector4 ORIGIN = new Vector4(0, 0, 0, 1);
         public String selectedBuildingName = null;
 
