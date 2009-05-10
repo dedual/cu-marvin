@@ -119,3 +119,4 @@ Content\Fonts\UIFont.xnb
 Content\Shaders\ParticleEffect.xnb
 Content\Shaders\PostScreenShadowBlur.xnb
 Content\Shaders\ShadowMap.xnb
+Content\Models\3dm-pad.xnb
