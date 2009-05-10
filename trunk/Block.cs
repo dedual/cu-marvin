@@ -113,7 +113,7 @@ namespace MARVIN
         }
         public Building getBuilding(string address)
         {
-            Building temp;
+            Building temp = new Building();
             temp.setBuildingName("Error");
 
             foreach (Building b in buildingsInBlocks)
