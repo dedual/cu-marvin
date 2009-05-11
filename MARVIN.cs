@@ -35,6 +35,7 @@ namespace MARVIN
     /// </summary>
     public class MARVIN : Microsoft.Xna.Framework.Game
     {
+        static Scene scene;
         static GlobalVariables global;
         static Pointer pointer;
         static Notebook notebook;
@@ -67,7 +68,8 @@ namespace MARVIN
             State.InitGoblin(global.graphics, Content, "manhattanville.xml");
 
             // Initialize the scene graph
-            global.scene = new Scene(this);
+            Scene scene = new Scene(this);
+            global.setScene(ref scene);
 
             // Use the newton physics engine to perform collision detection
             global.scene.PhysicsEngine = new NewtonPhysics();
@@ -142,8 +144,8 @@ namespace MARVIN
             // on the device driver.  The values set here will work for a Microsoft VX 6000, 
             // and many other webcams.
             DirectShowCapture captureDevice = new DirectShowCapture();
-            captureDevice.InitVideoCapture(3, FrameRate._30Hz, Resolution._800x600,ImageFormat.R8G8B8_24, false);            
-            //captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
+            //captureDevice.InitVideoCapture(3, FrameRate._30Hz, Resolution._800x600,ImageFormat.R8G8B8_24, false);            
+            captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
             // Add this video capture device to the scene so that it can be used for
             // the marker tracker
             global.scene.AddVideoCaptureDevice(captureDevice);

@@ -94,5 +94,10 @@ namespace MARVIN
             colorPalette[7] = Color.DeepPink.ToVector4();
         }
 
+        public void setScene(ref Scene s)
+        {
+            scene = s;
+        }
+
     }
 }
