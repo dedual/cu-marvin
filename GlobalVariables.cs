@@ -55,6 +55,11 @@ namespace MARVIN
         public List<Attribute> attributes; //size 8
         public String xmlFilename;
 
+        public String label = "Welcome to MARVIN!";
+        public Color labelColor = Color.Red;
+        public SpriteFont labelFont;
+        public SpriteFont uiFont;
+
         public GeometryNode pointerTip;
         public GeometryNode pointerSegment;
         public GeometryNode toolbar1Node;

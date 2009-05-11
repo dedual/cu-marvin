@@ -73,6 +73,10 @@ namespace MARVIN
             global.scene.PhysicsEngine = new NewtonPhysics();
 
             global.outdoors = true;
+            SpriteFont labelfont = Content.Load<SpriteFont>("Sample");
+            SpriteFont uifont = Content.Load<SpriteFont>("UIFont");
+            global.labelFont = labelfont;
+            global.uiFont = uifont;
 
             // Set up optical marker tracking
             // Note that we don't create our own camera when we use optical marker
@@ -610,6 +614,10 @@ namespace MARVIN
             }
             
             base.Draw(gameTime);
+
+            // Draw a 2D text string at the top-left of the screen
+            UI2DRenderer.WriteText(Vector2.Zero, global.label, global.labelColor,
+                global.labelFont, GoblinEnums.HorizontalAlignment.Center, GoblinEnums.VerticalAlignment.Top);
         }
 
         

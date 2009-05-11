@@ -124,14 +124,14 @@ namespace MARVIN
                 // We only care about the closest picked object for now, so we'll simply display the name 
                 // of the closest picked object whose container is a geometry node
                 global.selectedBuildingName = ((GeometryNode)pickedObjects[0].PickedPhysicsObject.Container).Name;
-                //label = selectedBuildingName + " is selected";
+                global.label = global.selectedBuildingName + " is selected";
 
                 //previouslySelectedBuilding = selectedBuilding;
                 //selectedBuilding = (GeometryNode)scene.GetNode(selectedBuildingName);
             }
             else
             {
-                //label = "Nothing is selected";
+                global.label = "Nothing is selected";
                 //previouslySelectedBuilding = selectedBuilding;
                 global.selectedBuildingName = null;
                 //selectedBuilding = null;
