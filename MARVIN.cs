@@ -103,7 +103,7 @@ namespace MARVIN
             createBuildings(factor);
 
             //Parses the XML building data document
-            global.xmlFilename = "XMLFile1.xml";
+            global.xmlFilename = "XMLFile2.xml";
             xmlReader.parseXMLBuildingFile(global.xmlFilename);
 
             // Show Frames-Per-Second on the screen for debugging
