@@ -56,6 +56,7 @@ namespace MARVIN
         public TransformNode blockTransNode;       
         public List<TransformNode> buildingTransNodes;        
         public List<GeometryNode> buildingGeomNodes;
+        public List<Building> buildingList;
 
         public List<Attribute> attributes; //size 8
         public String xmlFilename;
@@ -64,6 +65,7 @@ namespace MARVIN
         public Color labelColor = Color.Red;
         public SpriteFont labelFont;
         public SpriteFont uiFont;
+        public List<G2DLabel> attributeLabels;
 
         public Vector3 calibrateCoords;
 
@@ -117,6 +119,20 @@ namespace MARVIN
             colorPalette[5] = Color.Aqua.ToVector4();
             colorPalette[6] = Color.Purple.ToVector4();
             colorPalette[7] = Color.DeepPink.ToVector4();
+
+            initializeLabels();
+        }
+
+        public void initializeLabels()
+        {
+            attributeLabels = new List<G2DLabel>();
+            G2DLabel thisLabel;
+            for (int i = 0; i < 8; i++)
+            {
+                thisLabel = new G2DLabel("Text");
+                thisLabel.TextFont = uiFont;
+                attributeLabels.Add(thisLabel);
+            }
         }
 
         public void setScene(ref Scene s)
