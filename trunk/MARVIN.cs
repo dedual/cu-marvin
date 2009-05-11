@@ -841,7 +841,7 @@ namespace MARVIN
             if (global.toolbar1MarkerNode.MarkerFound)
             {
                 pointer.performPointing();
-                global.block1.printBuildingCoordinates();
+                //global.block1.printBuildingCoordinates();
             }
             else
             {
