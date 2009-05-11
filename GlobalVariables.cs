@@ -42,7 +42,7 @@ namespace MARVIN
         public Scene scene; //Scene
         public MarkerNode groundMarkerNode, toolbar1MarkerNode; //Ground and Pointer Markers
     //    public MarkerNode block1MarkerNode, block2MarkerNode; //Markers for each block
-        public List<GeometryNode> buildings;
+        //public List<GeometryNode> buildings;
         public Texture2D notebookTopTexture;        
         public TransformNode parentTrans;
         public TransformNode toolBar1OccluderTransNode;
@@ -51,6 +51,10 @@ namespace MARVIN
         public List<TransformNode> attributeTransNodes;
         public List<GeometryNode> attributeBoxes;
         public List<Material> attributeMaterials;
+
+        public MarkerNode blockMarker;
+        public List<TransformNode> buildingTransNodes;
+        public List<GeometryNode> buildingGeomNodes;
 
         public List<Attribute> attributes; //size 8
         public String xmlFilename;
@@ -64,6 +68,22 @@ namespace MARVIN
         public GeometryNode pointerSegment;
         public GeometryNode toolbar1Node;
         public GeometryNode notebookBoxNode;
+        public TransformNode notebookShowcaseTransNode;
+        public GeometryNode notebookShowcaseGeomNode;
+        public int typeOfObjectBeingHighlighted = -1;
+        public int indexOfObjectBeingHighlighted = -1;
+        public int typeOfObjectBeingSelected = -1;
+        public int indexOfObjectBeingSelected = -1;
+        public int NOTHING = -1;
+        public int BUILDING = 1;
+        public int ATTRIBUTE = 2;
+        public int LEFT_CONE = 3;
+        public int RIGHT_CONE = 4;
+
+        public TransformNode leftConeTransNode;
+        public TransformNode rightConeTransNode;
+        public GeometryNode leftConeGeomNode;
+        public GeometryNode rightConeGeomNode;
 
         public Material pointerMaterial;
         public Material notebookTopMaterial;
@@ -97,6 +117,42 @@ namespace MARVIN
         public void setScene(ref Scene s)
         {
             scene = s;
+        }
+
+        public void resetObjectColors()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                buildingGeomNodes[i].Material.Diffuse = Color.White.ToVector4();
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                attributeBoxes[i].Material.Diffuse = colorPalette[i];
+            }
+
+            leftConeGeomNode.Material.Emissive = Color.RosyBrown.ToVector4();
+            rightConeGeomNode.Material.Emissive = Color.RosyBrown.ToVector4();
+        }
+
+        public void highlight(int index, int typeOfGeomNode, Color color)
+        {
+            if (typeOfGeomNode == BUILDING)
+            {
+                buildingGeomNodes[index].Material.Diffuse = color.ToVector4();
+            }
+            else if(typeOfGeomNode == ATTRIBUTE)
+            {
+                attributeBoxes[index].Material.Diffuse = color.ToVector4();
+            }
+            else if (typeOfGeomNode == LEFT_CONE)
+            {
+                leftConeGeomNode.Material.Emissive = color.ToVector4();
+            }
+            else //if (typeOfGeomNode == RIGHT_CONE)
+            {
+                rightConeGeomNode.Material.Emissive = color.ToVector4();
+            }
         }
 
     }

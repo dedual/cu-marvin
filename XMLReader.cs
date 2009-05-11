@@ -82,7 +82,7 @@ namespace MARVIN
                     for (int j = 0; j < global.attributes.Count; j++)
                     {
                         thisAttributeName = global.attributes[j].name;
-                        Console.WriteLine("thisAttributeName: " + thisAttributeName);
+                        //Console.WriteLine("thisAttributeName: " + thisAttributeName);
 
                         if (thisXMLElement.HasAttribute(thisAttributeName))
                         {

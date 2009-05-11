@@ -59,7 +59,7 @@ namespace MARVIN
                 Building tempBuilding = new Building(s);
                 tempBuilding.loadBuildingModel(true, 1.0f); //change scale factor if necessary
                 buildingsInBlocks.Add(tempBuilding);
-                blockTransNode.AddChild(tempBuilding.getBuildingNode());
+                //blockTransNode.AddChild(tempBuilding.getBuildingNode());  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //  blockTransNode.Scale = new Vector3(blockTransNode.Scale.X * 1.0f, blockTransNode.Scale.Y * 1.0f, blockTransNode.Scale.Z * 1.0f);
             }
         }

@@ -106,16 +106,20 @@ namespace MARVIN
 //            LoadPlainBuildings(factor);
             // Load detailed buildings
 //            LoadDetailedBuildings(factor);
-            createBuildings(factor);
+            //createBuildings(factor);
+            createBuildings2();
 
             //Parses the XML building data document
             global.xmlFilename = "XMLFile2.xml";
-            xmlReader.parseXMLBuildingFile(global.xmlFilename);
+            //xmlReader.parseXMLBuildingFile(global.xmlFilename);
 
             // Show Frames-Per-Second on the screen for debugging
             State.ShowFPS = true;
             State.ShowNotifications = true;
             GoblinXNA.UI.Notifier.FadeOutTime = 1;
+
+            // Add a mouse click callback function to perform picking when mouse is clicked
+            MouseInput.MouseClickEvent += new HandleMouseClick(MouseClickHandler);
 
             base.Initialize();
         }
@@ -174,6 +178,8 @@ namespace MARVIN
 
         private void createBuildings(float factor)
         {
+            Console.WriteLine("Creating buildings...");
+            
             if (global.outdoors)
             {
 
@@ -204,6 +210,130 @@ namespace MARVIN
             {
 
             }
+        }
+
+        private void createBuildings2()
+        {
+            string[] buildingSetBlock1 = new string[] { "3221_Broadway", "3229_Broadway", "3233_Broadway", "613_W129st", "623_W129st", "627_W129st", "651_W125st", "663_W125st", "635_W125st", "633_W125st", "628_W125st", "619_W125st" };//, "564_Riverside","603_W130st","615_W130st","617_W130st","625_W130st","631_W130st","632_W130st","641_W130st","604_W131st","605_W131st","609_W131st","614_W131st","615_W131st","620_W131st","622_W131st","624_W131st","630_W131st","635_W131st","636_W131st","638_W131st","641_W131st","653_W131st","640_W132st","2283_Joe_Dimaggio_Highway","2291_Joe_Dimaggio_Highway","2293_Joe_Dimaggio_Highway","2307_Joe_Dimaggio_Highway","2311_Joe_Dimaggio_Highway","2321_Joe_Dimaggio_Highway"  };
+            MarkerNode block1Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar6");
+            block1Marker.Smoother = new DESSmoother(0.8f, 0.8f);
+            global.blockMarker = block1Marker;
+            global.scene.RootNode.AddChild(global.blockMarker);
+
+            global.buildingGeomNodes = new List<GeometryNode>(8);
+            global.buildingTransNodes = new List<TransformNode>(8);
+
+
+            for (int i = 0; i < 8; i++)
+            {
+                TransformNode thisTransformNode = new TransformNode();
+                thisTransformNode.Translation = new Vector3(1.7f*i, 2.5f*i, 0.0f);
+                thisTransformNode.Scale = new Vector3(1.0f, 1.0f, 1.0f);
+
+                String thisBuildingName = buildingSetBlock1[i];
+                Building thisBuilding = new Building(thisBuildingName);
+                thisBuilding.loadBuildingModel(true, 1.0f);
+
+                //GeometryNode thisGeometryNode = thisBuilding.getBuildingNode();
+                //GeometryNode thisGeometryNode = new GeometryNode();
+                //thisGeometryNode.Model = new Box(2);
+                GeometryNode thisGeometryNode = getBuildingNode(i);
+
+                global.buildingGeomNodes.Add(thisGeometryNode);
+                global.buildingTransNodes.Add(thisTransformNode);
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                global.blockMarker.AddChild(global.buildingTransNodes[i]);
+                global.buildingTransNodes[i].AddChild(global.buildingGeomNodes[i]);
+            }
+        }
+
+        public GeometryNode getBuildingNode(int index)
+        {
+            GeometryNode returnGeometryNode = new GeometryNode();
+            returnGeometryNode.Model = new Box(2);
+
+            Material thisMaterial = new Material();
+            thisMaterial.Diffuse = global.colorPalette[index];
+            returnGeometryNode.Material = thisMaterial;
+
+            return returnGeometryNode;
+        }
+
+        /*public GeometryNode loadBuildingModel(bool plainOrDetailed, float factor)
+        {
+            GeometryNode buildingGeomNode;
+            FileStream file;
+            StreamReader sr;
+            if (plainOrDetailed)
+            {
+                file = new FileStream("buildings_detailed.csv", FileMode.Open, FileAccess.Read);
+                sr = new StreamReader(file);
+            }
+            else
+            {
+                file = new FileStream("buildings_plain.csv", FileMode.Open,
+                    FileAccess.Read);
+                sr = new StreamReader(file);
+            }
+            ModelLoader loader = new ModelLoader();
+            float zRot, x, y, z;
+            String[] chunks;
+            char[] seps = { ',' };
+
+            String s = "";
+            try
+            {
+                // Skip the first line which has column names
+                sr.ReadLine();
+
+                while (!sr.EndOfStream)
+                {
+                    s = sr.ReadLine();
+
+                    if (s.Length > 0)
+                    {
+                        chunks = s.Split(seps);
+
+                        if (chunks[0] == buildingName)
+                        {
+                            buildingGeomNode = new GeometryNode(chunks[0]);
+                            buildingGeomNode.Model = (Model)loader.Load("", "Detailed/" + chunks[0]);
+                            buildingGeomNode.AddToPhysicsEngine = true;
+                            buildingGeomNode.Physics.Shape = ShapeType.Box;
+                            buildingGeomNode.Model.CastShadows = true;
+                            buildingGeomNode.Model.OffsetToOrigin = true; ///////////////////////////////////////////////////////////////////
+
+                            zRot = (float)Double.Parse(chunks[1]);
+                            x = (float)Double.Parse(chunks[2]);
+                            y = (float)Double.Parse(chunks[3]);
+                            z = (float)Double.Parse(chunks[4]);
+
+                            //               buildingTransNode = new TransformNode();
+                            //               buildingTransNode.Translation = new Vector3(x, y, z * factor);
+                            //               buildingTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
+                            //                   (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
+                            //                   MathHelper.PiOver2);
+
+                            buildingMaterial = new Material();
+                            buildingMaterial.Diffuse = Color.White.ToVector4();
+                            buildingMaterial.Specular = Color.White.ToVector4();
+                            buildingMaterial.SpecularPower = 10;
+
+                            buildingGeomNode.Material = buildingMaterial;
+                        }
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine("buildings.csv has wrong format: " + s);
+            }
+
+            sr.Close();
+            file.Close();
         }
 
         private void CreateTerrain(float factor)
@@ -443,7 +573,7 @@ namespace MARVIN
 
             transNode.AddChild(skirfNode);
         }
-        private void transferToNotebook(string address, Block block)
+        /*private void transferToNotebook(string address, Block block)
         {
 
             GeometryNode buildingToTransfer = (block.getBuilding(address)).getBuildingNode();
@@ -460,15 +590,16 @@ namespace MARVIN
             newTransform.AddChild(buildingToTransfer);
             global.groundMarkerNode.AddChild(newTransform);
 
-        }
+        }*/
 
         private void LoadPlainBuildings(float factor)
         {
+            Console.WriteLine("Loading plain buildings...");
             FileStream file = new FileStream("buildings_plain.csv", FileMode.Open,
                 FileAccess.Read);
             StreamReader sr = new StreamReader(file);
 
-            global.buildings = new List<GeometryNode>();
+            //global.buildings = new List<GeometryNode>();
             ModelLoader loader = new ModelLoader();
 
             float scale = 0.00728f;
@@ -500,7 +631,7 @@ namespace MARVIN
                         building.AddToPhysicsEngine = true;
                         building.Physics.Shape = ShapeType.Box;
 
-                        global.buildings.Add(building);
+                       // global.buildings.Add(building);
 
                         zRot = (float)Double.Parse(chunks[1]);
                         x = (float)Double.Parse(chunks[2]);
@@ -537,10 +668,11 @@ namespace MARVIN
 
         private void LoadDetailedBuildings(float factor)
         {
+            Console.WriteLine("Loading detailed buildings...");
             FileStream file = new FileStream("buildings_detailed.csv", FileMode.Open, FileAccess.Read);
             StreamReader sr = new StreamReader(file);
 
-            global.buildings = new List<GeometryNode>();
+            //global.buildings = new List<GeometryNode>();
             ModelLoader loader = new ModelLoader();
 
             float scale = 0.0073f;
@@ -573,7 +705,7 @@ namespace MARVIN
                         building.AddToPhysicsEngine = true;
                         building.Physics.Shape = ShapeType.Box;
 
-                        global.buildings.Add(building);
+                        //global.buildings.Add(building);
 
                         zRot = (float)Double.Parse(chunks[1]);
                         x = (float)Double.Parse(chunks[2]);
@@ -605,6 +737,46 @@ namespace MARVIN
 
             sr.Close();
             file.Close();
+        }
+
+        public void transferBuildingToNotebook()
+        {
+            //GeometryNode buildingToTransfer = (GeometryNode) global.buildingGeomNodes[global.indexOfObjectBeingHighlighted];
+            GeometryNode buildingToTransfer = getBuildingNode(global.indexOfObjectBeingHighlighted);
+
+            global.notebookShowcaseTransNode.RemoveChild(global.notebookShowcaseGeomNode);
+
+
+            //if (global.notebookShowcaseTransNode.Children.Count > 1)
+            //{
+            //    global.notebookShowcaseTransNode.RemoveChild(global.notebookShowcaseGeomNode);
+            //}
+
+            
+
+            //TransformNode showcaseTransNode = new TransformNode();
+            //showcaseTransNode.Scale = new Vector3(5.0f, 5.0f, 5.0f);
+           // showcaseTransNode.AddChild(buildingToTransfer);
+
+
+            //global.notebookShowcaseTransNode = showcaseTransNode;
+            global.notebookShowcaseTransNode.Translation = new Vector3(-20.0f, 00.0f, 7.0f);
+            global.notebookShowcaseTransNode.Scale = new Vector3(4.5f, 4.5f, 4.5f);
+            global.notebookShowcaseTransNode.AddChild(buildingToTransfer);
+
+
+            /*block.removeBuilding(address);
+            TransformNode newTransform = new TransformNode();
+            float scale = 0.0073f;
+            newTransform.Scale = Vector3.One * scale;
+            newTransform.Translation = new Vector3(0.0f, -64.25f, 0.0f);
+            //          newTransform.Translation = new Vector3(33.5f, -54.25f, 0.0f);
+            newTransform.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
+            newTransform.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
+                                (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
+                                MathHelper.PiOver2) * newTransform.Rotation;
+            newTransform.AddChild(buildingToTransfer);
+            global.groundMarkerNode.AddChild(newTransform);*/
         }
 
         /// <summary>
@@ -640,6 +812,46 @@ namespace MARVIN
                 global.labelFont, GoblinEnums.HorizontalAlignment.Center, GoblinEnums.VerticalAlignment.Top);
         }
 
+
+        private void MouseClickHandler(int button, Point mouseLocation)
+        {
+            if (button == MouseInput.LeftButton)
+            {
+                if (global.typeOfObjectBeingHighlighted == global.NOTHING)
+                {
+                    //Do nothing.
+                }
+                if (global.typeOfObjectBeingHighlighted == global.BUILDING)
+                {
+                    global.typeOfObjectBeingSelected = global.BUILDING;
+                    global.indexOfObjectBeingSelected = global.indexOfObjectBeingHighlighted;
+
+                    global.resetObjectColors();
+                    
+                    //Draw Bounding Box around building //////////////////////////////////////////////////////////////////////////////////////////////////
+                    transferBuildingToNotebook();
+                }
+                else //if (global.typeOfObjectBeingHighlighted == global.ATTRIBUTE)
+                {
+                    //NEED STUFF HERE!
+                }
+            }
+            else if (button == MouseInput.RightButton)
+            {
+                //Maybe use this to confirm text input?
+
+
+                /*if ((operatingMode == SELECT) || (operatingMode == SCALE))
+                {
+                    scaleTrigger();
+                }
+                else
+                {
+                    cancelMove();
+                    returnToSelectMode();
+                }*/
+            }
+        }
         
     }
 }
