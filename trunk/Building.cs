@@ -36,7 +36,7 @@ namespace MARVIN
         //Building properties
         System.String buildingName; //Building Name
         System.String buildingInfo; //Building info
-        List<Attribute> attributes; //size 8
+        List<Attribute> attributes = new List<Attribute>(); //size 8
 
         //Constructors
         public Building()
