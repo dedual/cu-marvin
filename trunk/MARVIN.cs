@@ -120,6 +120,8 @@ namespace MARVIN
 
             // Add a mouse click callback function to perform picking when mouse is clicked
             MouseInput.MouseClickEvent += new HandleMouseClick(MouseClickHandler);
+            // Add a mouse click callback function to perform picking when mouse is clicked
+            MouseInput.MousePressEvent += new HandleMousePress(MousePressHandler);
 
             base.Initialize();
         }
@@ -230,9 +232,9 @@ namespace MARVIN
                 thisTransformNode.Translation = new Vector3(1.7f*i, 2.5f*i, 0.0f);
                 thisTransformNode.Scale = new Vector3(1.0f, 1.0f, 1.0f);
 
-                String thisBuildingName = buildingSetBlock1[i];
+                /*String thisBuildingName = buildingSetBlock1[i];
                 Building thisBuilding = new Building(thisBuildingName);
-                thisBuilding.loadBuildingModel(true, 1.0f);
+                thisBuilding.loadBuildingModel(true, 1.0f);*/
 
                 //GeometryNode thisGeometryNode = thisBuilding.getBuildingNode();
                 //GeometryNode thisGeometryNode = new GeometryNode();
@@ -243,9 +245,11 @@ namespace MARVIN
                 global.buildingTransNodes.Add(thisTransformNode);
             }
 
+            global.blockTransNode = new TransformNode();
+            global.blockMarker.AddChild(global.blockTransNode);
             for (int i = 0; i < 8; i++)
             {
-                global.blockMarker.AddChild(global.buildingTransNodes[i]);
+                global.blockTransNode.AddChild(global.buildingTransNodes[i]);
                 global.buildingTransNodes[i].AddChild(global.buildingGeomNodes[i]);
             }
         }
@@ -744,7 +748,12 @@ namespace MARVIN
             //GeometryNode buildingToTransfer = (GeometryNode) global.buildingGeomNodes[global.indexOfObjectBeingHighlighted];
             GeometryNode buildingToTransfer = getBuildingNode(global.indexOfObjectBeingHighlighted);
 
-            global.notebookShowcaseTransNode.RemoveChild(global.notebookShowcaseGeomNode);
+            int count1 = global.notebookShowcaseTransNode.Children.Count;
+            Console.WriteLine("Before: " + count1);    
+            //global.notebookShowcaseTransNode.RemoveChild(global.notebookShowcaseGeomNode); ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            global.notebookShowcaseModelTransNode.RemoveChildren();
+            int count2 = global.notebookShowcaseTransNode.Children.Count;
+            Console.WriteLine("After: " + count2);
 
 
             //if (global.notebookShowcaseTransNode.Children.Count > 1)
@@ -760,9 +769,17 @@ namespace MARVIN
 
 
             //global.notebookShowcaseTransNode = showcaseTransNode;
-            global.notebookShowcaseTransNode.Translation = new Vector3(-20.0f, 00.0f, 7.0f);
-            global.notebookShowcaseTransNode.Scale = new Vector3(4.5f, 4.5f, 4.5f);
-            global.notebookShowcaseTransNode.AddChild(buildingToTransfer);
+            global.notebookShowcaseModelTransNode.Translation = new Vector3(-20.0f, 0.0f, 7.0f); //(-20.0f, ...)
+            global.notebookShowcaseModelTransNode.Scale = new Vector3(4.5f, 4.5f, 4.5f);///////////////Changed from 4.5 to 1.5
+            global.notebookShowcaseModelTransNode.AddChild(buildingToTransfer); 
+            //global.notebookShowcaseGeomNode = buildingToTransfer;
+            //global.notebookShowcaseTransNode.AddChild(global.leftConeTransNode);//////////////////////////////////////////////////////
+            //global.leftConeTransNode.AddChild(global.leftConeGeomNode);//YYY******New!
+            //global.notebookShowcaseTransNode.AddChild(global.rightConeTransNode);/////////////////////////////////////////////////////
+            //global.rightConeTransNode.AddChild(global.rightConeGeomNode);//***********New!
+
+            int count3 = global.notebookShowcaseTransNode.Children.Count;
+            Console.WriteLine("After: " + count3);
 
 
             /*block.removeBuilding(address);
@@ -852,6 +869,23 @@ namespace MARVIN
                 }*/
             }
         }
-        
+
+
+        private void MousePressHandler(int button, Point mouseLocation)
+        {
+            if (button == MouseInput.LeftButton)
+            {
+                if (global.typeOfObjectBeingHighlighted == global.LEFT_CONE)
+                {
+                    Quaternion extraRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, 0.05f);
+                    global.notebookShowcaseModelTransNode.Rotation = Quaternion.Concatenate(global.notebookShowcaseModelTransNode.Rotation, extraRotation);
+                }
+                else if(global.typeOfObjectBeingHighlighted == global.RIGHT_CONE)
+                {
+                    Quaternion extraRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -0.05f);
+                    global.notebookShowcaseModelTransNode.Rotation = Quaternion.Concatenate(global.notebookShowcaseModelTransNode.Rotation, extraRotation);
+                }
+            }
+        }
     }
 }

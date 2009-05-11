@@ -53,6 +53,7 @@ namespace MARVIN
         public List<Material> attributeMaterials;
 
         public MarkerNode blockMarker;
+        public TransformNode blockTransNode;
         public List<TransformNode> buildingTransNodes;
         public List<GeometryNode> buildingGeomNodes;
 
@@ -70,6 +71,7 @@ namespace MARVIN
         public GeometryNode notebookBoxNode;
         public TransformNode notebookShowcaseTransNode;
         public GeometryNode notebookShowcaseGeomNode;
+        public TransformNode notebookShowcaseModelTransNode;
         public int typeOfObjectBeingHighlighted = -1;
         public int indexOfObjectBeingHighlighted = -1;
         public int typeOfObjectBeingSelected = -1;

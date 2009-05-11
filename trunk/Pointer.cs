@@ -155,7 +155,7 @@ namespace MARVIN
             }
 
 
-            if (minDistanceSoFar <= 30.0f) //if something's close enough to be selected
+            if (minDistanceSoFar <= 50.0f) //if something's close enough to be selected
             {
                 global.typeOfObjectBeingHighlighted = highlightedObjectType;
                 global.indexOfObjectBeingHighlighted = highlightedObjectIndex;
@@ -167,7 +167,14 @@ namespace MARVIN
                 global.pointerSegment.Material = global.pointerMaterial;
 
                 global.highlight(global.indexOfObjectBeingHighlighted, global.typeOfObjectBeingHighlighted, Color.Yellow);
-                global.label = "Select " + global.indexOfObjectBeingHighlighted + "?";
+                if ((global.typeOfObjectBeingHighlighted == global.LEFT_CONE) || (global.typeOfObjectBeingHighlighted == global.RIGHT_CONE))
+                {
+                    global.label = "Rotate building?";
+                }
+                else
+                {
+                    global.label = "Select " + global.indexOfObjectBeingHighlighted + "?";
+                }
             }
             else
             {
