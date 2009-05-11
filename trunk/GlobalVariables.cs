@@ -43,10 +43,17 @@ namespace MARVIN
         public MarkerNode groundMarkerNode, toolbar1MarkerNode; //Ground and Pointer Markers
     //    public MarkerNode block1MarkerNode, block2MarkerNode; //Markers for each block
         public List<GeometryNode> buildings;
-        public Texture2D notebookTopTexture;        public TransformNode parentTrans;
+        public Texture2D notebookTopTexture;        
+        public TransformNode parentTrans;
         public TransformNode toolBar1OccluderTransNode;
-        public TransformNode notebookBoxTransNode;
 
+        public TransformNode notebookBoxTransNode;
+        public List<TransformNode> attributeTransNodes;
+        public List<GeometryNode> attributeBoxes;
+        public List<Material> attributeMaterials;
+
+        public List<Attribute> attributes; //size 8
+        public String xmlFilename;
 
         public GeometryNode pointerTip;
         public GeometryNode pointerSegment;
@@ -58,8 +65,11 @@ namespace MARVIN
 
         public Model notebookModel;
 
+        public Vector4[] colorPalette = new Vector4[8];
         public Vector4 ORIGIN = new Vector4(0, 0, 0, 1);
         public String selectedBuildingName = null;
+
+        public Block block1, block2;
 
         public float y_shift = -62;
         public float x_shift = -28.0f;
@@ -68,6 +78,16 @@ namespace MARVIN
         {
             //Do nothing
             //graphics = new GraphicsDeviceManager(this);
+
+            colorPalette[0] = Color.Red.ToVector4();
+            colorPalette[1] = Color.Green.ToVector4();
+            colorPalette[2] = Color.Yellow.ToVector4();
+            colorPalette[3] = Color.Blue.ToVector4();
+            colorPalette[4] = Color.DarkOrange.ToVector4();
+            colorPalette[5] = Color.Aqua.ToVector4();
+            colorPalette[6] = Color.Purple.ToVector4();
+            colorPalette[7] = Color.DeepPink.ToVector4();
         }
+
     }
 }
