@@ -38,8 +38,9 @@ namespace MARVIN
         static GlobalVariables global;
         static Pointer pointer;
         static Notebook notebook;
+        static XMLReader xmlReader;
 
-        Block block1, block2;
+        
 
         public MARVIN()
         {
@@ -51,6 +52,7 @@ namespace MARVIN
 
             pointer = new Pointer(ref global);
             notebook = new Notebook(ref global);
+            xmlReader = new XMLReader(ref global);
         }
 
         /// <summary>
@@ -83,7 +85,7 @@ namespace MARVIN
             ModelLoader loader = new ModelLoader();
             global.notebookModel = (Model)loader.Load("", "3dm-pad");
             global.notebookModel.UseInternalMaterials = true;
-//            notebook.createNotebook();
+            notebook.createNotebook();
 
             // Set up the lights used in the scene
             CreateLights();
@@ -92,13 +94,17 @@ namespace MARVIN
 
 //            createBuildings(factor);
             // Create 3D terrain on top of the map layout
-            CreateTerrain(factor);
+//            CreateTerrain(factor);
 
             // Load plain buildings
 //            LoadPlainBuildings(factor);
             // Load detailed buildings
 //            LoadDetailedBuildings(factor);
             createBuildings(factor);
+
+            //Parses the XML building data document
+            global.xmlFilename = "XMLFile1.xml";
+            xmlReader.parseXMLBuildingFile(global.xmlFilename);
 
             // Show Frames-Per-Second on the screen for debugging
             State.ShowFPS = true;
@@ -132,7 +138,8 @@ namespace MARVIN
             // on the device driver.  The values set here will work for a Microsoft VX 6000, 
             // and many other webcams.
             DirectShowCapture captureDevice = new DirectShowCapture();
-            captureDevice.InitVideoCapture(3, FrameRate._30Hz, Resolution._800x600,ImageFormat.R8G8B8_24, false);            //captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
+            //captureDevice.InitVideoCapture(2, FrameRate._30Hz, Resolution._800x600,ImageFormat.R8G8B8_24, false);            
+            captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
             // Add this video capture device to the scene so that it can be used for
             // the marker tracker
             global.scene.AddVideoCaptureDevice(captureDevice);
@@ -168,31 +175,31 @@ namespace MARVIN
                 MarkerNode block1Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar6");
                 block1Marker.Smoother = new DESSmoother(0.8f, 0.8f);
 
-                block1 = new Block(block1Marker, buildingSetBlock1);
+                global.block1 = new Block(block1Marker, buildingSetBlock1);
                 //    block1.setMarkerNode(block1Marker);
                 //    Building block1TestBuilding = new Building("3221_Broadway");
                 //    block1TestBuilding.loadBuildingModel(true, factor);
 
                 //     block1.addBuilding(block1TestBuilding);
-                block1.setScaling(3.0f, 3.0f, 3.0f);
-                block1.setTranslation(30.0f, -244.25f, -210.0f);
-                block1.setRotation(10.0f, 0.0f, 0.0f);
-                global.scene.RootNode.AddChild(block1.getMarkerNode());
+                global.block1.setScaling(3.0f, 3.0f, 3.0f);
+                global.block1.setTranslation(30.0f, -244.25f, -210.0f);
+                global.block1.setRotation(10.0f, 0.0f, 0.0f);
+                global.scene.RootNode.AddChild(global.block1.getMarkerNode());
 
                 string[] buildingSetBlock2 = new string[] { "564_Riverside"};
                 MarkerNode block2Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar3");
                 block2Marker.Smoother = new DESSmoother(0.8f, 0.8f);
 
-                block2 = new Block(block2Marker, buildingSetBlock2);
+                global.block2 = new Block(block2Marker, buildingSetBlock2);
                 //    block1.setMarkerNode(block1Marker);
                 //    Building block1TestBuilding = new Building("3221_Broadway");
                 //    block1TestBuilding.loadBuildingModel(true, factor);
 
                 //     block1.addBuilding(block1TestBuilding);
-                block2.setScaling(3.0f, 3.0f, 3.0f);
-                block2.setTranslation(30.0f, -244.25f, -210.0f);
-                block2.setRotation(10.0f, 0.0f, 0.0f);
-                global.scene.RootNode.AddChild(block2.getMarkerNode());
+                global.block2.setScaling(3.0f, 3.0f, 3.0f);
+                global.block2.setTranslation(30.0f, -244.25f, -210.0f);
+                global.block2.setRotation(10.0f, 0.0f, 0.0f);
+                global.scene.RootNode.AddChild(global.block2.getMarkerNode());
             }
             else //We're indoors, setup differently
             {
