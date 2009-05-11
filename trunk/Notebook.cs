@@ -66,6 +66,43 @@ namespace MARVIN
             global.notebookBoxTransNode.AddChild(global.notebookBoxNode);
 
             /*
+             * Now we define the notebookShowcase nodes to stick the building model & rotator cones in 
+             */
+            global.notebookShowcaseTransNode = new TransformNode();
+            global.notebookShowcaseGeomNode = new GeometryNode();
+            global.notebookBoxTransNode.AddChild(global.notebookShowcaseTransNode);
+            global.leftConeTransNode = new TransformNode();
+            global.rightConeTransNode = new TransformNode();
+            float coneHeight = 3.0f;
+
+            Matrix leftConeRotation = (Matrix.CreateRotationZ((float)-Math.PI/2.0f));
+            global.leftConeTransNode.Scale = new Vector3(0.35f, 0.35f, 0.35f);
+            global.leftConeTransNode.Rotation = Quaternion.CreateFromRotationMatrix(leftConeRotation);
+            global.leftConeTransNode.Translation = new Vector3(-14.0f, -3.0f, 6.0f);
+
+            Matrix rightConeRotation = (Matrix.CreateRotationZ((float)Math.PI/2.0f));
+            global.rightConeTransNode.Scale = new Vector3(0.35f, 0.35f, 0.35f);
+            global.rightConeTransNode.Rotation = Quaternion.CreateFromRotationMatrix(rightConeRotation);
+            global.rightConeTransNode.Translation = new Vector3(-27.0f, -3.0f, 6.0f);
+
+            global.leftConeGeomNode = new GeometryNode("Left Cone");
+            global.leftConeGeomNode.Model = new Cylinder(1.8f, 0.05f, coneHeight, 12);
+            Material leftConeMaterial = new Material();
+            leftConeMaterial.Emissive = Color.RosyBrown.ToVector4();
+            global.leftConeGeomNode.Material = leftConeMaterial;
+
+            global.rightConeGeomNode = new GeometryNode("Right Cone");
+            global.rightConeGeomNode.Model = new Cylinder(1.8f, 0.05f, coneHeight, 12);
+            Material rightConeMaterial = new Material();
+            rightConeMaterial.Emissive = Color.RosyBrown.ToVector4();
+            global.rightConeGeomNode.Material = rightConeMaterial;
+
+            global.notebookShowcaseTransNode.AddChild(global.leftConeTransNode);
+            global.leftConeTransNode.AddChild(global.leftConeGeomNode);
+            global.notebookShowcaseTransNode.AddChild(global.rightConeTransNode);
+            global.rightConeTransNode.AddChild(global.rightConeGeomNode);
+
+            /*
              *  Now it's time to create the box buttons on the right portion of the notebook
              */
             global.attributeBoxes = new List<GeometryNode>();
