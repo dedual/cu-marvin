@@ -111,6 +111,16 @@ namespace MARVIN
             buildingsInBlocks.Add(_building);
             blockTransNode.AddChild(_building.getBuildingNode());
         }
+        public void setBuildingMaterial(string address, Material newMat)
+        {
+            foreach (Building b in buildingsInBlocks)
+            {
+                if (b.getBuildingName() == address)
+                {
+                    b.setBuildingMaterial(newMat);
+                }
+            }
+        }
         public Building getBuilding(string address)
         {
             Building temp = new Building();
