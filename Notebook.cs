@@ -66,9 +66,37 @@ namespace MARVIN
             global.notebookBoxTransNode.AddChild(global.notebookBoxNode);
 
             /*
-             *  Now it's time to create the box buttons on the right potion of the notebook
+             *  Now it's time to create the box buttons on the right portion of the notebook
              */
+            global.attributeBoxes = new List<GeometryNode>();
+            global.attributeTransNodes = new List<TransformNode>();
+            global.attributeMaterials = new List<Material>();
+            GeometryNode thisAttributeBox;
+            Material thisMaterial;
+            TransformNode thisAttributeTransNode;
+            Vector3 thisTranslationVector;
+            //for(int i = 0; i < global.NUMBER_OF_ATTRIBUTES; i++)
+            for(int i = 0; i < 8; i++)
+            {
+                thisAttributeBox = new GeometryNode("Attribute " + i);
+                thisAttributeBox.Model = new Box(3);
+                thisMaterial = new Material();
+                thisMaterial.Diffuse = global.colorPalette[i];
+                //thisMaterial.Specular = Color.White.ToVector4();
+                //thisMaterial.SpecularPower = 10;
+                global.attributeMaterials.Add(thisMaterial);
+                thisAttributeBox.Material = global.attributeMaterials[i];
+                thisAttributeTransNode = new TransformNode();
 
+                thisTranslationVector = new Vector3(-32.0f+9.25f*i, 11.0f, 6.0f); //reading down notebook is +x direction
+                                                                                 //reading to the right is +y direction
+                thisAttributeTransNode.Translation = thisTranslationVector;
+
+                global.attributeBoxes.Add(thisAttributeBox);
+                global.attributeTransNodes.Add(thisAttributeTransNode);
+                global.groundMarkerNode.AddChild(global.attributeTransNodes[i]);
+                global.attributeTransNodes[i].AddChild(global.attributeBoxes[i]);
+            }
         }
     }
 }
