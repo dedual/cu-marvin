@@ -70,6 +70,7 @@ namespace MARVIN
              */
             global.notebookShowcaseTransNode = new TransformNode();
             global.notebookShowcaseGeomNode = new GeometryNode();
+            global.notebookShowcaseModelTransNode = new TransformNode();
             global.notebookBoxTransNode.AddChild(global.notebookShowcaseTransNode);
             global.leftConeTransNode = new TransformNode();
             global.rightConeTransNode = new TransformNode();
@@ -97,6 +98,7 @@ namespace MARVIN
             rightConeMaterial.Emissive = Color.RosyBrown.ToVector4();
             global.rightConeGeomNode.Material = rightConeMaterial;
 
+            global.notebookShowcaseTransNode.AddChild(global.notebookShowcaseModelTransNode);
             global.notebookShowcaseTransNode.AddChild(global.leftConeTransNode);
             global.leftConeTransNode.AddChild(global.leftConeGeomNode);
             global.notebookShowcaseTransNode.AddChild(global.rightConeTransNode);
