@@ -28,6 +28,8 @@ namespace MARVIN
 {
     public class Building : Microsoft.Xna.Framework.Game
     {
+        public GlobalVariables global;
+
         //Nodes and trackers
         GeometryNode buildingGeomNode; //Geometry Node
         Material buildingMaterial; //Building Material
@@ -35,18 +37,22 @@ namespace MARVIN
        
         //Building properties
         System.String buildingName; //Building Name
-        System.String buildingInfo; //Building info
+       // System.String buildingInfo; //Building info
         List<Attribute> attributes = new List<Attribute>(); //size 8
 
         //Constructors
-        public Building()
+        public Building(ref GlobalVariables g)
         {
+            global = g;
+
             buildingGeomNode = new GeometryNode();
             buildingMaterial = new Material();
             buildingTransNode = new TransformNode();
         }
-        public Building(System.String name)
+        public Building(System.String name, ref GlobalVariables g)
         {
+            global = g;
+
             buildingName = name;
 
             buildingGeomNode = new GeometryNode();
@@ -168,32 +174,54 @@ namespace MARVIN
                     {
                         chunks = s.Split(seps);
 
-                        if (chunks[0] == buildingName)
+                        if (chunks[0].Equals(buildingName))
                         {
                             buildingGeomNode = new GeometryNode(chunks[0]);
                             buildingGeomNode.Model = (Model)loader.Load("", "Detailed/" + chunks[0]);
+                            //buildingGeomNode.Model.OffsetTransform
+                            /////////////////////////////////////////////////buildingGeomNode.Model.OffsetToOrigin = false;
+                            buildingGeomNode.Model.OffsetToOrigin = true; //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            buildingGeomNode.Physics.Pickable = true;
                             buildingGeomNode.AddToPhysicsEngine = true;
                             buildingGeomNode.Physics.Shape = ShapeType.Box;
                             buildingGeomNode.Model.CastShadows = true;
-                            buildingGeomNode.Model.OffsetToOrigin = true; ///////////////////////////////////////////////////////////////////
-
-                            zRot = (float)Double.Parse(chunks[1]);
-                            x = (float)Double.Parse(chunks[2]);
-                            y = (float)Double.Parse(chunks[3]);
-                            z = (float)Double.Parse(chunks[4]);
-
-             //               buildingTransNode = new TransformNode();
-             //               buildingTransNode.Translation = new Vector3(x, y, z * factor);
-             //               buildingTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
-             //                   (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
-             //                   MathHelper.PiOver2);
+                            //buildingGeomNode.Model.OffsetToOrigin = true; ///////////////////////////////////////////////////////////////////
 
                             buildingMaterial = new Material();
                             buildingMaterial.Diffuse = Color.White.ToVector4();
                             buildingMaterial.Specular = Color.White.ToVector4();
                             buildingMaterial.SpecularPower = 10;
+   
+                         /*   if ((buildingName.Equals("3221_Broadway")) || (buildingName.Equals("623_W129st")))
+                            {
+                                Console.WriteLine("I got here!");
+                                buildingTransNode = new TransformNode();
+                                buildingTransNode.Translation = new Vector3(100.0f, 0.0f, 100.0f);
+                                buildingTransNode.Scale = new Vector3(5, 5, 5);
+
+                                buildingMaterial.Diffuse = Color.Green.ToVector4();
+                                buildingMaterial.Specular = Color.Green.ToVector4();
+                            }
+                          */
+
 
                             buildingGeomNode.Material = buildingMaterial;
+
+                            zRot = (float)Double.Parse(chunks[1]);
+                            x = -1*((buildingGeomNode.Model.MinimumBoundingBox.Max.X + buildingGeomNode.Model.MinimumBoundingBox.Min.X) / 2) + global.calibrateCoords.X;
+                            y = -1*((buildingGeomNode.Model.MinimumBoundingBox.Max.Y + buildingGeomNode.Model.MinimumBoundingBox.Min.Y) / 2) + global.calibrateCoords.Y;
+                            z = -1 * ((buildingGeomNode.Model.MinimumBoundingBox.Max.Z + buildingGeomNode.Model.MinimumBoundingBox.Min.Z) / 2) + global.calibrateCoords.Z;
+/*
+                            buildingTransNode = new TransformNode();
+                            buildingTransNode.Translation = new Vector3(x, y, z * factor);
+                            buildingTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
+                                (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
+                                MathHelper.PiOver2);
+                            buildingTransNode.
+                            buildingTransNode.AddChild(buildingGeomNode);
+
+                            buildingGeomNode.Model.OffsetToOrigin = true;
+ */
                         }
                     }
                 }

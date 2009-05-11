@@ -96,7 +96,7 @@ namespace MARVIN
             Vector3 homog_pointerScreenCoords = global.graphics.GraphicsDevice.Viewport.Project(inhomog_pointerWorldCoords,
                 State.ProjectionMatrix, State.ViewMatrix, Matrix.Identity);
 
-            //GoblinXNA.UI.Notifier.AddMessage("Pointer Screen Coords: " + homog_pointerScreenCoords);
+            GoblinXNA.UI.Notifier.AddMessage("Pointer Screen Coords: " + homog_pointerScreenCoords);
 
             // 0 means on the near clipping plane, and 1 means on the far clipping plane
             Vector3 nearSource = new Vector3(homog_pointerScreenCoords.X, homog_pointerScreenCoords.Y, 0);
