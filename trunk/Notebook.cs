@@ -58,7 +58,7 @@ namespace MARVIN
             global.notebookBoxTransNode.Scale = new Vector3(3, 3, 3);
 
             global.notebookBoxNode.Physics.Shape = GoblinXNA.Physics.ShapeType.ConvexHull;
-            global.notebookBoxNode.Physics.Pickable = false;
+            global.notebookBoxNode.Physics.Pickable = true;
             global.notebookBoxNode.AddToPhysicsEngine = true;
 
             // Now add the box nodes to the scene graph in the appropriate order
