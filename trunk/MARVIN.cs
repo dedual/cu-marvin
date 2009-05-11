@@ -35,7 +35,8 @@ namespace MARVIN
     /// </summary>
     public class MARVIN : Microsoft.Xna.Framework.Game
     {
-        static Scene scene;
+       // static Scene scene;
+        Scene scene;
         static GlobalVariables global;
         static Pointer pointer;
         static Notebook notebook;
@@ -68,7 +69,7 @@ namespace MARVIN
             State.InitGoblin(global.graphics, Content, "manhattanville.xml");
 
             // Initialize the scene graph
-            Scene scene = new Scene(this);
+            scene = new Scene(this);
             global.setScene(ref scene);
 
             // Use the newton physics engine to perform collision detection
@@ -98,6 +99,18 @@ namespace MARVIN
 
             float factor = 135.0f / 1353;
 
+            if (global.outdoors)
+            {
+                createBuildings2();// (factor);
+            }
+            else
+            {
+                string[] buildingSetBlock1 = new string[] { "3221_Broadway", "3229_Broadway", "3233_Broadway", "613_W129st", "623_W129st", "627_W129st", "651_W125st", "663_W125st", "635_W125st", "633_W125st", "628_W125st", "619_W125st" };//, "564_Riverside","603_W130st","615_W130st","617_W130st","625_W130st","631_W130st","632_W130st","641_W130st","604_W131st","605_W131st","609_W131st","614_W131st","615_W131st","620_W131st","622_W131st","624_W131st","630_W131st","635_W131st","636_W131st","638_W131st","641_W131st","653_W131st","640_W132st","2283_Joe_Dimaggio_Highway","2291_Joe_Dimaggio_Highway","2293_Joe_Dimaggio_Highway","2307_Joe_Dimaggio_Highway","2311_Joe_Dimaggio_Highway","2321_Joe_Dimaggio_Highway"  };
+                
+                CreateTerrain(factor);
+                //LoadDetailedBuildings(factor, buildingSetBlock1);
+            }
+
 //            createBuildings(factor);
             // Create 3D terrain on top of the map layout
 //            CreateTerrain(factor);
@@ -106,12 +119,10 @@ namespace MARVIN
 //            LoadPlainBuildings(factor);
             // Load detailed buildings
 //            LoadDetailedBuildings(factor);
-            //createBuildings(factor);
-            createBuildings2();
-
+            //createBuildings(factor);            createBuildings2();
             //Parses the XML building data document
             global.xmlFilename = "XMLFile2.xml";
-            //xmlReader.parseXMLBuildingFile(global.xmlFilename);
+           // xmlReader.parseXMLBuildingFile(global.xmlFilename);
 
             // Show Frames-Per-Second on the screen for debugging
             State.ShowFPS = true;
@@ -119,9 +130,9 @@ namespace MARVIN
             GoblinXNA.UI.Notifier.FadeOutTime = 1;
 
             // Add a mouse click callback function to perform picking when mouse is clicked
-            MouseInput.MouseClickEvent += new HandleMouseClick(MouseClickHandler);
+            MouseInput.Instance.MouseClickEvent    += new HandleMouseClick(MouseClickHandler);
             // Add a mouse click callback function to perform picking when mouse is clicked
-            MouseInput.MousePressEvent += new HandleMousePress(MousePressHandler);
+            MouseInput.Instance.MousePressEvent += new HandleMousePress(MousePressHandler);
 
             base.Initialize();
         }
@@ -150,8 +161,8 @@ namespace MARVIN
             // on the device driver.  The values set here will work for a Microsoft VX 6000, 
             // and many other webcams.
             DirectShowCapture captureDevice = new DirectShowCapture();
-            //captureDevice.InitVideoCapture(3, FrameRate._30Hz, Resolution._800x600,ImageFormat.R8G8B8_24, false);            
-            captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
+            captureDevice.InitVideoCapture(2, FrameRate._30Hz, Resolution._640x480,ImageFormat.R8G8B8_24, false);            
+           // captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
             // Add this video capture device to the scene so that it can be used for
             // the marker tracker
             global.scene.AddVideoCaptureDevice(captureDevice);
@@ -181,42 +192,38 @@ namespace MARVIN
         private void createBuildings(float factor)
         {
             Console.WriteLine("Creating buildings...");
-            
-            if (global.outdoors)
-            {
 
-                string[] buildingSetBlock1 = new string[] { "3221_Broadway", "3229_Broadway", "3233_Broadway", "613_W129st", "623_W129st", "627_W129st", "651_W125st", "663_W125st", "635_W125st", "633_W125st", "628_W125st", "619_W125st" };//, "564_Riverside","603_W130st","615_W130st","617_W130st","625_W130st","631_W130st","632_W130st","641_W130st","604_W131st","605_W131st","609_W131st","614_W131st","615_W131st","620_W131st","622_W131st","624_W131st","630_W131st","635_W131st","636_W131st","638_W131st","641_W131st","653_W131st","640_W132st","2283_Joe_Dimaggio_Highway","2291_Joe_Dimaggio_Highway","2293_Joe_Dimaggio_Highway","2307_Joe_Dimaggio_Highway","2311_Joe_Dimaggio_Highway","2321_Joe_Dimaggio_Highway"  };
-                MarkerNode block1Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar6");
-                block1Marker.Smoother = new DESSmoother(0.8f, 0.8f);
+            string[] buildingSetBlock1 = new string[] { "3221_Broadway", "3229_Broadway", "3233_Broadway", "613_W129st", "623_W129st", "627_W129st", "651_W125st", "663_W125st", "635_W125st", "633_W125st", "628_W125st", "619_W125st" };//, "564_Riverside","603_W130st","615_W130st","617_W130st","625_W130st","631_W130st","632_W130st","641_W130st","604_W131st","605_W131st","609_W131st","614_W131st","615_W131st","620_W131st","622_W131st","624_W131st","630_W131st","635_W131st","636_W131st","638_W131st","641_W131st","653_W131st","640_W132st","2283_Joe_Dimaggio_Highway","2291_Joe_Dimaggio_Highway","2293_Joe_Dimaggio_Highway","2307_Joe_Dimaggio_Highway","2311_Joe_Dimaggio_Highway","2321_Joe_Dimaggio_Highway"  };
+            MarkerNode block1Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar6");
+            block1Marker.Smoother = new DESSmoother(0.8f, 0.8f);
 
-                global.block1 = new Block(block1Marker, buildingSetBlock1);
+                global.block1 = new Block(block1Marker, buildingSetBlock1, ref global);
                 //    block1.setMarkerNode(block1Marker);
                 //    Building block1TestBuilding = new Building("3221_Broadway");
                 //    block1TestBuilding.loadBuildingModel(true, factor);
 
                 //     block1.addBuilding(block1TestBuilding);
-                global.block1.setScaling(3.0f, 3.0f, 3.0f);
-                global.block1.setTranslation(30.0f, -244.25f, -210.0f);
-                global.block1.setRotation(10.0f, 0.0f, 0.0f);
+               // global.block1.setScaling(3.0f, 3.0f, 3.0f);
+               // global.block1.setTranslation(30.0f, -244.25f, -210.0f);
+               // global.block1.setRotation(10.0f, 0.0f, 0.0f);
                 global.scene.RootNode.AddChild(global.block1.getMarkerNode());
+                /*
+                                //Brian's code below //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                //global.scene.getMarkerNode
 
-   /*             string[] buildingSetBlock2 = new string[] { "564_Riverside" };
-                MarkerNode block2Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar3");
-                block2Marker.Smoother = new DESSmoother(0.8f, 0.8f);
+                                string[] buildingSetBlock2 = new string[] { "564_Riverside" };
+                                MarkerNode block2Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar3");
+                                block2Marker.Smoother = new DESSmoother(0.8f, 0.8f);
 
-                global.block2 = new Block(block2Marker, buildingSetBlock2);
+                                global.block2 = new Block(block2Marker, buildingSetBlock2);
 
-                global.block2.setScaling(0.75f, 0.75f, 0.75f);         //       block2.setRotation(0.0f, -20.0f, 0.0f);                block2.setTranslation(20.0f, -60.25f, -40.0f);                                global.scene.RootNode.AddChild(block2.getMarkerNode());            }
-    */        }
-            else //We're indoors, setup differently
-            {
-
-            }
+                                global.block2.setScaling(0.75f, 0.75f, 0.75f);         //       block2.setRotation(0.0f, -20.0f, 0.0f);                block2.setTranslation(20.0f, -60.25f, -40.0f);                                global.scene.RootNode.AddChild(block2.getMarkerNode());            }
+                            */
         }
 
         private void createBuildings2()
         {
-            string[] buildingSetBlock1 = new string[] { "3221_Broadway", "3229_Broadway", "3233_Broadway", "613_W129st", "623_W129st", "627_W129st", "651_W125st", "663_W125st", "635_W125st", "633_W125st", "628_W125st", "619_W125st" };//, "564_Riverside","603_W130st","615_W130st","617_W130st","625_W130st","631_W130st","632_W130st","641_W130st","604_W131st","605_W131st","609_W131st","614_W131st","615_W131st","620_W131st","622_W131st","624_W131st","630_W131st","635_W131st","636_W131st","638_W131st","641_W131st","653_W131st","640_W132st","2283_Joe_Dimaggio_Highway","2291_Joe_Dimaggio_Highway","2293_Joe_Dimaggio_Highway","2307_Joe_Dimaggio_Highway","2311_Joe_Dimaggio_Highway","2321_Joe_Dimaggio_Highway"  };
+            string[] buildingSetBlock1 = new string[] { "3229_Broadway", "3221_Broadway", "3233_Broadway", "613_W129st", "623_W129st", "627_W129st", "651_W125st", "663_W125st", "635_W125st", "633_W125st", "628_W125st", "619_W125st" };//, "564_Riverside","603_W130st","615_W130st","617_W130st","625_W130st","631_W130st","632_W130st","641_W130st","604_W131st","605_W131st","609_W131st","614_W131st","615_W131st","620_W131st","622_W131st","624_W131st","630_W131st","635_W131st","636_W131st","638_W131st","641_W131st","653_W131st","640_W132st","2283_Joe_Dimaggio_Highway","2291_Joe_Dimaggio_Highway","2293_Joe_Dimaggio_Highway","2307_Joe_Dimaggio_Highway","2311_Joe_Dimaggio_Highway","2321_Joe_Dimaggio_Highway"  };
             MarkerNode block1Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar6");
             block1Marker.Smoother = new DESSmoother(0.8f, 0.8f);
             global.blockMarker = block1Marker;
@@ -225,27 +232,45 @@ namespace MARVIN
             global.buildingGeomNodes = new List<GeometryNode>(8);
             global.buildingTransNodes = new List<TransformNode>(8);
 
+            global.scale = 0.01f;
 
-            for (int i = 0; i < 8; i++)
+
+            for (int i = 0; i < buildingSetBlock1.Length; i++)
             {
+                String thisBuildingName = buildingSetBlock1[i];
+                Building thisBuilding = new Building(thisBuildingName, ref global);
+                thisBuilding.loadBuildingModel(true, 1.0f);
+
+                GeometryNode thisGeometryNode = thisBuilding.getBuildingNode();
+
+                if (i == 0)
+                {
+                    global.calibrateCoords = new Vector3(
+                                    (thisGeometryNode.Model.MinimumBoundingBox.Max.X + thisGeometryNode.Model.MinimumBoundingBox.Min.X) / 2,
+                                    (thisGeometryNode.Model.MinimumBoundingBox.Max.Y + thisGeometryNode.Model.MinimumBoundingBox.Min.Y) / 2,
+                                    (thisGeometryNode.Model.MinimumBoundingBox.Max.Z + thisGeometryNode.Model.MinimumBoundingBox.Min.Z) / 2);
+                }
+
+                float x = global.scale * (((thisGeometryNode.Model.MinimumBoundingBox.Max.X + thisGeometryNode.Model.MinimumBoundingBox.Min.X) / 2) - global.calibrateCoords.X);
+                float y = global.scale * (((thisGeometryNode.Model.MinimumBoundingBox.Max.Y + thisGeometryNode.Model.MinimumBoundingBox.Min.Y) / 2) - global.calibrateCoords.Y);
+                float z = global.scale * (((thisGeometryNode.Model.MinimumBoundingBox.Max.Z + thisGeometryNode.Model.MinimumBoundingBox.Min.Z) / 2) - global.calibrateCoords.Z);
+
                 TransformNode thisTransformNode = new TransformNode();
-                thisTransformNode.Translation = new Vector3(1.7f*i, 2.5f*i, 0.0f);
-                thisTransformNode.Scale = new Vector3(1.0f, 1.0f, 1.0f);
+                thisTransformNode.Translation = new Vector3(x, y, z);
+                thisTransformNode.Scale = new Vector3(0.0073f, 0.0073f, 0.0073f);
+               // thisTransformNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
 
-                /*String thisBuildingName = buildingSetBlock1[i];
-                Building thisBuilding = new Building(thisBuildingName);
-                thisBuilding.loadBuildingModel(true, 1.0f);*/
-
-                //GeometryNode thisGeometryNode = thisBuilding.getBuildingNode();
+                /*String thisBuildingName = buildingSetBlock1[i];                Building thisBuilding = new Building(thisBuildingName);                thisBuilding.loadBuildingModel(true, 1.0f);*/                //GeometryNode thisGeometryNode = thisBuilding.getBuildingNode();
                 //GeometryNode thisGeometryNode = new GeometryNode();
                 //thisGeometryNode.Model = new Box(2);
-                GeometryNode thisGeometryNode = getBuildingNode(i);
+                //GeometryNode thisGeometryNode = getBuildingNode(i);
 
                 global.buildingGeomNodes.Add(thisGeometryNode);
                 global.buildingTransNodes.Add(thisTransformNode);
             }
 
             global.blockTransNode = new TransformNode();
+            global.blockTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
             global.blockMarker.AddChild(global.blockTransNode);
             for (int i = 0; i < 8; i++)
             {
@@ -266,7 +291,7 @@ namespace MARVIN
             return returnGeometryNode;
         }
 
-        /*public GeometryNode loadBuildingModel(bool plainOrDetailed, float factor)
+/*        public GeometryNode loadBuildingModel(bool plainOrDetailed, float factor)
         {
             GeometryNode buildingGeomNode;
             FileStream file;
@@ -339,7 +364,7 @@ namespace MARVIN
             sr.Close();
             file.Close();
         }
-
+*/
         private void CreateTerrain(float factor)
         {
             float y_gap = 120.0f / 6;
@@ -589,7 +614,7 @@ namespace MARVIN
   //          newTransform.Translation = new Vector3(33.5f, -54.25f, 0.0f);
             newTransform.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
             newTransform.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
-                                (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
+                                (float)(Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
                                 MathHelper.PiOver2) * newTransform.Rotation;
             newTransform.AddChild(buildingToTransfer);
             global.groundMarkerNode.AddChild(newTransform);
@@ -598,8 +623,7 @@ namespace MARVIN
 
         private void LoadPlainBuildings(float factor)
         {
-            Console.WriteLine("Loading plain buildings...");
-            FileStream file = new FileStream("buildings_plain.csv", FileMode.Open,
+            Console.WriteLine("Loading plain buildings...");            FileStream file = new FileStream("buildings_plain.csv", FileMode.Open,
                 FileAccess.Read);
             StreamReader sr = new StreamReader(file);
 
@@ -648,6 +672,7 @@ namespace MARVIN
                             (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
                             MathHelper.PiOver2);
                         transNode.Scale = Vector3.One * scale;
+                        
 
                         Material buildingMaterial = new Material();
                         buildingMaterial.Diffuse = Color.White.ToVector4();
@@ -816,6 +841,7 @@ namespace MARVIN
             if (global.toolbar1MarkerNode.MarkerFound)
             {
                 pointer.performPointing();
+                global.block1.printBuildingCoordinates();
             }
             else
             {

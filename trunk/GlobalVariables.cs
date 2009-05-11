@@ -40,7 +40,7 @@ namespace MARVIN
         //public ContentManager Content;
 
         public Scene scene; //Scene
-        public MarkerNode groundMarkerNode, toolbar1MarkerNode; //Ground and Pointer Markers
+        public MarkerNode groundMarkerNode, toolbar1MarkerNode, indoorMarkerNode; //Ground and Pointer Markers
     //    public MarkerNode block1MarkerNode, block2MarkerNode; //Markers for each block
         //public List<GeometryNode> buildings;
         public Texture2D notebookTopTexture;        
@@ -53,8 +53,8 @@ namespace MARVIN
         public List<Material> attributeMaterials;
 
         public MarkerNode blockMarker;
-        public TransformNode blockTransNode;
-        public List<TransformNode> buildingTransNodes;
+        public TransformNode blockTransNode;       
+        public List<TransformNode> buildingTransNodes;        
         public List<GeometryNode> buildingGeomNodes;
 
         public List<Attribute> attributes; //size 8
@@ -64,6 +64,8 @@ namespace MARVIN
         public Color labelColor = Color.Red;
         public SpriteFont labelFont;
         public SpriteFont uiFont;
+
+        public Vector3 calibrateCoords;
 
         public GeometryNode pointerTip;
         public GeometryNode pointerSegment;
@@ -100,6 +102,7 @@ namespace MARVIN
 
         public float y_shift = -62;
         public float x_shift = -28.0f;
+        public float scale;
 
         public GlobalVariables()
         {
