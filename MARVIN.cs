@@ -441,6 +441,24 @@ namespace MARVIN
 
             transNode.AddChild(skirfNode);
         }
+        private void transferToNotebook(string address, Block block)
+        {
+
+            GeometryNode buildingToTransfer = (block.getBuilding(address)).getBuildingNode();
+            block.removeBuilding(address);
+            TransformNode newTransform = new TransformNode();
+            float scale = 0.0073f;
+            newTransform.Scale = Vector3.One*scale;
+            newTransform.Translation = new Vector3(0.0f, -64.25f, 0.0f);
+  //          newTransform.Translation = new Vector3(33.5f, -54.25f, 0.0f);
+            newTransform.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
+            newTransform.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
+                                (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
+                                MathHelper.PiOver2) * newTransform.Rotation;
+            newTransform.AddChild(buildingToTransfer);
+            global.groundMarkerNode.AddChild(newTransform);
+
+        }
 
         private void LoadPlainBuildings(float factor)
         {
