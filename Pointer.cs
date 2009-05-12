@@ -96,7 +96,7 @@ namespace MARVIN
             Vector3 homog_pointerScreenCoords = global.graphics.GraphicsDevice.Viewport.Project(inhomog_pointerWorldCoords,
                 State.ProjectionMatrix, State.ViewMatrix, Matrix.Identity);
 
-            GoblinXNA.UI.Notifier.AddMessage("Pointer Screen Coords: " + homog_pointerScreenCoords);
+            //GoblinXNA.UI.Notifier.AddMessage("Pointer Screen Coords: " + homog_pointerScreenCoords);
 
             // 0 means on the near clipping plane, and 1 means on the far clipping plane
             Vector3 nearSource = new Vector3(homog_pointerScreenCoords.X, homog_pointerScreenCoords.Y, 0);
@@ -133,6 +133,23 @@ namespace MARVIN
             }
 
             //Now do "for each attribute"/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            for (int i = 0; i < 8; i++) //for each attribute
+            {
+                Vector3 homog_attributeScreenCoords = getScreenCoords(i, global.ATTRIBUTE);
+                distanceToPointer = screenDistance(homog_pointerScreenCoords, homog_attributeScreenCoords);
+
+                if (i == 0)
+                {
+                    //GoblinXNA.UI.Notifier.AddMessage("Building 0 Screen Coords: " + homog_buildingScreenCoords);
+                }
+
+                if (distanceToPointer < minDistanceSoFar)
+                {
+                    highlightedObjectType = global.ATTRIBUTE;
+                    highlightedObjectIndex = i;
+                    minDistanceSoFar = distanceToPointer;
+                }
+            }
 
             //Now we do left cone
             Vector3 homog_leftConeScreenCoords = getScreenCoords(-1, global.LEFT_CONE);
@@ -155,7 +172,7 @@ namespace MARVIN
             }
 
 
-            if (minDistanceSoFar <= 50.0f) //if something's close enough to be selected
+            if (minDistanceSoFar <= 75.0f) //if something's close enough to be selected
             {
                 global.typeOfObjectBeingHighlighted = highlightedObjectType;
                 global.indexOfObjectBeingHighlighted = highlightedObjectIndex;
@@ -171,9 +188,17 @@ namespace MARVIN
                 {
                     global.label = "Rotate building?";
                 }
-                else
+                else if (global.typeOfObjectBeingHighlighted == global.BUILDING)
                 {
                     global.label = "Select " + global.indexOfObjectBeingHighlighted + "?";
+                }
+                else if (global.typeOfObjectBeingHighlighted == global.ATTRIBUTE)
+                {
+                    //global.label = "Select " + global.indexOfObjectBeingHighlighted + "?";
+                }
+                else
+                {
+                    //global.label = "Select " + global.indexOfObjectBeingHighlighted + "?";
                 }
             }
             else
@@ -191,35 +216,6 @@ namespace MARVIN
 
 
             
-
-
-            /*// Have the physics engine intersect the pick ray defined by the nearPoint and farPoint with
-            // the physics objects in the scene (which we have set up to approximate the model geometry).
-            List<PickedObject> pickedObjects = ((NewtonPhysics)global.scene.PhysicsEngine).PickRayCast(
-                nearPoint, farPoint);
-
-            // If one or more objects intersect with our ray vector
-            if (pickedObjects.Count > 0)
-            {
-                // Since PickedObject can be compared (which means it implements IComparable), we can sort it in 
-                // the order of closest intersected object to farthest intersected object
-                pickedObjects.Sort();
-
-                // We only care about the closest picked object for now, so we'll simply display the name 
-                // of the closest picked object whose container is a geometry node
-                global.selectedBuildingName = ((GeometryNode)pickedObjects[0].PickedPhysicsObject.Container).Name;
-                global.label = global.selectedBuildingName + " is selected";
-
-                //previouslySelectedBuilding = selectedBuilding;
-                //selectedBuilding = (GeometryNode)scene.GetNode(selectedBuildingName);
-            }
-            else
-            {
-                global.label = "Nothing is selected";
-                //previouslySelectedBuilding = selectedBuilding;
-                global.selectedBuildingName = null;
-                //selectedBuilding = null;
-            }*/
         }
 
         public Vector3 getScreenCoords(int index, int typeOfNode)

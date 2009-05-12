@@ -66,6 +66,7 @@ namespace MARVIN
         public SpriteFont labelFont;
         public SpriteFont uiFont;
         public List<G2DLabel> attributeLabels;
+        public List<G2DPanel> labelPanels;
 
         public Vector3 calibrateCoords;
 
@@ -80,6 +81,7 @@ namespace MARVIN
         public int indexOfObjectBeingHighlighted = -1;
         public int typeOfObjectBeingSelected = -1;
         public int indexOfObjectBeingSelected = -1;
+        public int attributeCurrentlyBeingViewed = -1;
         public int NOTHING = -1;
         public int BUILDING = 1;
         public int ATTRIBUTE = 2;
@@ -119,20 +121,35 @@ namespace MARVIN
             colorPalette[5] = Color.Aqua.ToVector4();
             colorPalette[6] = Color.Purple.ToVector4();
             colorPalette[7] = Color.DeepPink.ToVector4();
-
-            initializeLabels();
         }
 
         public void initializeLabels()
         {
             attributeLabels = new List<G2DLabel>();
+            labelPanels = new List<G2DPanel>();
             G2DLabel thisLabel;
+            G2DPanel thisPanel;
             for (int i = 0; i < 8; i++)
             {
-                thisLabel = new G2DLabel("Text");
+                thisLabel = new G2DLabel("Attribute Label " + i);
                 thisLabel.TextFont = uiFont;
+                thisLabel.TextColor = Color.Black;
+                thisLabel.Visible = true;
+                thisLabel.TextTransparency = 1.0f;
                 attributeLabels.Add(thisLabel);
+                
+                thisPanel = new G2DPanel();
+                thisPanel.Border = GoblinEnums.BorderFactory.LineBorder;
+                thisPanel.Transparency = 0.7f;
+                labelPanels.Add(thisPanel);
+                scene.UIRenderer.Add2DComponent(labelPanels[i]);
+                labelPanels[i].AddChild(attributeLabels[i]);
             }
+
+            // Create the main panel which holds all other GUI components
+            /*frame = new G2DPanel();
+            frame.Bounds = new Rectangle(615, 350, 170, 110);
+            frame.Border = GoblinEnums.BorderFactory.LineBorder;*/
         }
 
         public void setScene(ref Scene s)
@@ -144,16 +161,54 @@ namespace MARVIN
         {
             for (int i = 0; i < 8; i++)
             {
-                buildingGeomNodes[i].Material.Diffuse = Color.White.ToVector4();
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
+                attributeBoxes[i].Model = new Box(3);
                 attributeBoxes[i].Material.Diffuse = colorPalette[i];
+                attributeTransNodes[i].Translation = new Vector3(-32.0f + 9.25f * i, 11.0f, 6.0f);
             }
+            
+            if (attributeCurrentlyBeingViewed == NOTHING)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    buildingGeomNodes[i].Material.Diffuse = Color.White.ToVector4();
+                }
 
-            leftConeGeomNode.Material.Emissive = Color.RosyBrown.ToVector4();
-            rightConeGeomNode.Material.Emissive = Color.RosyBrown.ToVector4();
+                leftConeGeomNode.Material.Emissive = Color.RosyBrown.ToVector4();
+                rightConeGeomNode.Material.Emissive = Color.RosyBrown.ToVector4();
+            }
+            else
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    //PUT GRADIENT STUFF HERE!!!!!!!!!
+                    //buildingGeomNodes[i].Material.Diffuse = Color.White.ToVector4();
+
+                    //if this building does not have a value assigned for the currently viewed attribute
+                    Attribute currentlyViewedAttribute = attributes[attributeCurrentlyBeingViewed];
+                    Attribute buildingAttribute = buildingList[i].getAttribute(currentlyViewedAttribute.name);
+                    if (buildingAttribute == null)
+                    {
+                        buildingGeomNodes[i].Material.Diffuse = Color.White.ToVector4();
+                    }
+                    else
+                    {
+                        buildingGeomNodes[i].Material.Diffuse = getGradientColor(buildingAttribute.value,
+                            currentlyViewedAttribute.min, currentlyViewedAttribute.max);
+                    }
+                }
+
+                for (int i = 0; i < 8; i++)
+                {
+                    attributeBoxes[i].Material.Diffuse = colorPalette[i];
+                }
+
+                attributeBoxes[attributeCurrentlyBeingViewed].Model = new Box(7);
+                attributeTransNodes[attributeCurrentlyBeingViewed].Translation = new Vector3(-32.0f + 9.25f * attributeCurrentlyBeingViewed, 11.0f, 8.0f);
+                
+                
+                leftConeGeomNode.Material.Emissive = Color.RosyBrown.ToVector4();
+                rightConeGeomNode.Material.Emissive = Color.RosyBrown.ToVector4();
+            }
         }
 
         public void highlight(int index, int typeOfGeomNode, Color color)
@@ -174,6 +229,49 @@ namespace MARVIN
             {
                 rightConeGeomNode.Material.Emissive = color.ToVector4();
             }
+        }
+
+        public Vector4 getGradientColor(double value, double min, double max)
+        {
+            Vector4 returnColor;
+
+            if (value <= min)
+            {
+                returnColor = Color.Green.ToVector4();
+            }
+            else if (value >= max)
+            {
+                returnColor = Color.Red.ToVector4();
+            }
+            else
+            {
+                if (value <= (min + max) / 2.0f)
+                {
+                    double range = ((min + max) / 2.0f) - min;
+                    double valueAboveMin = value - min;
+                    float weightOfMax = (float) (valueAboveMin / range);
+
+
+                    returnColor.X = ((1 - weightOfMax) * Color.LightGreen.ToVector4().X) * (weightOfMax * Color.Yellow.ToVector4().X);
+                    returnColor.Y = ((1 - weightOfMax) * Color.LightGreen.ToVector4().Y) * (weightOfMax * Color.Yellow.ToVector4().Y);
+                    returnColor.Z = ((1 - weightOfMax) * Color.LightGreen.ToVector4().Z) * (weightOfMax * Color.Yellow.ToVector4().Z);
+                    returnColor.W = 1;
+                }
+                else
+                {
+                    double range = max - ((min + max) / 2.0f);
+                    double valueAboveMedian = value - ((min + max) / 2.0f);
+                    float weightOfMax = (float)(valueAboveMedian / range);
+
+
+                    returnColor.X = ((1 - weightOfMax) * Color.Yellow.ToVector4().X) * (weightOfMax * Color.Red.ToVector4().X);
+                    returnColor.Y = ((1 - weightOfMax) * Color.Yellow.ToVector4().Y) * (weightOfMax * Color.Red.ToVector4().Y);
+                    returnColor.Z = ((1 - weightOfMax) * Color.Yellow.ToVector4().Z) * (weightOfMax * Color.Red.ToVector4().Z);
+                    returnColor.W = 1;
+                }
+            }
+
+            return returnColor;
         }
 
     }
