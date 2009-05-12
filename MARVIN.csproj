@@ -102,7 +102,6 @@
   <ItemGroup>
     <Content Include="ARTagWrapper.dll" />
     <Content Include="building-info_mod.XML" />
-    <Content Include="Copy of XMLFile1.xml" />
     <Content Include="freeglut.dll" />
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
@@ -124,7 +123,6 @@
     <None Include="buildings_plain.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ClassDiagram1.cd" />
     <None Include="manhattanville.cf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
