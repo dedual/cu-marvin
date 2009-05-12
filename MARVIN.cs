@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -122,6 +123,14 @@ namespace MARVIN
             //createBuildings(factor);            createBuildings2();
             //Parses the XML building data document
             global.xmlFilename = "XMLFile2.xml";
+            try
+            {
+                global.doc.Load(global.xmlFilename);
+            }
+            catch(XmlException xmle)
+            {
+                Console.WriteLine("ERROR: " + xmle.Message);
+            }
            // xmlReader.parseXMLBuildingFile(global.xmlFilename);
 
             // Show Frames-Per-Second on the screen for debugging
@@ -267,6 +276,7 @@ namespace MARVIN
 
                 global.buildingGeomNodes.Add(thisGeometryNode);
                 global.buildingTransNodes.Add(thisTransformNode);
+
             }
 
             global.blockTransNode = new TransformNode();
