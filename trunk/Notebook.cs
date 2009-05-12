@@ -128,7 +128,7 @@ namespace MARVIN
                 thisAttributeTransNode = new TransformNode();
 
                 thisTranslationVector = new Vector3(-32.0f+9.25f*i, 11.0f, 6.0f); //reading down notebook is +x direction
-                                                                                 //reading to the right is +y direction
+                                                                                  //reading to the right is +y direction
                 thisAttributeTransNode.Translation = thisTranslationVector;
 
                 global.attributeBoxes.Add(thisAttributeBox);
