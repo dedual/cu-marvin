@@ -36,14 +36,14 @@ namespace MARVIN
     /// </summary>
     public class MARVIN : Microsoft.Xna.Framework.Game
     {
-       // static Scene scene;
+        // static Scene scene;
         Scene scene;
         static GlobalVariables global;
         static Pointer pointer;
         static Notebook notebook;
         static XMLManager xmlManager;
 
-        
+
 
         public MARVIN()
         {
@@ -79,7 +79,9 @@ namespace MARVIN
             // Use the newton physics engine to perform collision detection
             global.scene.PhysicsEngine = new NewtonPhysics();
 
+            //Are we indoors or outdoors?
             global.outdoors = true;
+
             SpriteFont labelfont = Content.Load<SpriteFont>("Sample");
             SpriteFont uifont = Content.Load<SpriteFont>("UIFont");
             global.labelFont = labelfont;
@@ -110,34 +112,23 @@ namespace MARVIN
             else
             {
                 string[] buildingSetBlock1 = new string[] { "3221_Broadway", "3229_Broadway", "3233_Broadway", "613_W129st", "623_W129st", "627_W129st", "651_W125st", "663_W125st", "635_W125st", "633_W125st", "628_W125st", "619_W125st" };//, "564_Riverside","603_W130st","615_W130st","617_W130st","625_W130st","631_W130st","632_W130st","641_W130st","604_W131st","605_W131st","609_W131st","614_W131st","615_W131st","620_W131st","622_W131st","624_W131st","630_W131st","635_W131st","636_W131st","638_W131st","641_W131st","653_W131st","640_W132st","2283_Joe_Dimaggio_Highway","2291_Joe_Dimaggio_Highway","2293_Joe_Dimaggio_Highway","2307_Joe_Dimaggio_Highway","2311_Joe_Dimaggio_Highway","2321_Joe_Dimaggio_Highway"  };
-                
+
                 CreateTerrain(factor);
-                //LoadDetailedBuildings(factor, buildingSetBlock1);
+                LoadDetailedBuildings(factor, buildingSetBlock1);
             }
 
-//            createBuildings(factor);
+            //            createBuildings(factor);
             // Create 3D terrain on top of the map layout
-//            CreateTerrain(factor);
+            //            CreateTerrain(factor);
 
             // Load plain buildings
-//            LoadPlainBuildings(factor);
+            //            LoadPlainBuildings(factor);
             // Load detailed buildings
-//            LoadDetailedBuildings(factor);
+            //            LoadDetailedBuildings(factor);
             //createBuildings(factor);            createBuildings2();
             //Parses the XML building data document
             global.xmlFilename = "XMLFile2.xml";
-            try
-            {
-                global.doc.Load(global.xmlFilename);
-            }
-            catch(XmlException xmle)
-            {
-                Console.WriteLine("ERROR: " + xmle.Message);
-            }
-           // xmlReader.parseXMLBuildingFile(global.xmlFilename);
-            xmlManager.parseXMLBuildingFile(global.xmlFilename);
-
-            // Show Frames-Per-Second on the screen for debugging
+            try            {                global.doc.Load(global.xmlFilename);            }            catch(XmlException xmle)            {                Console.WriteLine("ERROR: " + xmle.Message);            }           // xmlReader.parseXMLBuildingFile(global.xmlFilename);            xmlManager.parseXMLBuildingFile(global.xmlFilename);            // Show Frames-Per-Second on the screen for debugging
             State.ShowFPS = true;
             State.ShowNotifications = true;
             GoblinXNA.UI.Notifier.FadeOutTime = 1;
@@ -154,10 +145,19 @@ namespace MARVIN
         {
             // Create a directional light source
             LightSource lightSource = new LightSource();
-            lightSource.Direction = new Vector3(-1, -1, -1);
-            lightSource.Diffuse = Color.White.ToVector4();
-            lightSource.Specular = new Vector4(0.6f, 0.6f, 0.6f, 1);
 
+            if (global.outdoors)
+            {
+                lightSource.Direction = new Vector3(-1, -1, -1);
+                lightSource.Diffuse = Color.White.ToVector4();
+                lightSource.Specular = new Vector4(0.6f, 0.6f, 0.6f, 1);
+            }
+            else
+            {
+                lightSource.Direction = new Vector3(-1, -1, -1);
+                lightSource.Diffuse = Color.White.ToVector4();
+                lightSource.Specular = new Vector4(0.6f, 0.6f, 0.6f, 1);
+            }
             // Create a light node to hold the light source
             LightNode lightNode = new LightNode();
             lightNode.LightSources.Add(lightSource);
@@ -174,7 +174,7 @@ namespace MARVIN
             // on the device driver.  The values set here will work for a Microsoft VX 6000, 
             // and many other webcams.
             DirectShowCapture captureDevice = new DirectShowCapture();
-            captureDevice.InitVideoCapture(0, FrameRate._30Hz, Resolution._640x480,ImageFormat.R8G8B8_24, false);            
+//            captureDevice.InitVideoCapture(3, FrameRate._30Hz, Resolution._800x600, ImageFormat.R8G8B8_24, false);            // captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);            captureDevice.InitVideoCapture(0, FrameRate._30Hz, Resolution._640x480,ImageFormat.R8G8B8_24, false);            
             //captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
             // Add this video capture device to the scene so that it can be used for
             // the marker tracker
@@ -191,6 +191,10 @@ namespace MARVIN
             // Create a marker node to track the ground marker arrays
             global.groundMarkerNode = new MarkerNode(global.scene.MarkerTracker, "ground");
             global.scene.RootNode.AddChild(global.groundMarkerNode);
+
+            // Create a marker node to track the indoor world model
+            global.indoorMarkerNode = new MarkerNode(global.scene.MarkerTracker, "toolbar3");
+            global.scene.RootNode.AddChild(global.indoorMarkerNode);
 
             // Create a marker node to track a toolbar marker array. Since we expect that the 
             // toolbar marker array will move a lot, we use a large smoothing alpha.
@@ -210,35 +214,35 @@ namespace MARVIN
             MarkerNode block1Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar6");
             block1Marker.Smoother = new DESSmoother(0.8f, 0.8f);
 
-                global.block1 = new Block(block1Marker, buildingSetBlock1, ref global);
-                //    block1.setMarkerNode(block1Marker);
-                //    Building block1TestBuilding = new Building("3221_Broadway");
-                //    block1TestBuilding.loadBuildingModel(true, factor);
+            global.block1 = new Block(block1Marker, buildingSetBlock1, ref global);
+            //    block1.setMarkerNode(block1Marker);
+            //    Building block1TestBuilding = new Building("3221_Broadway");
+            //    block1TestBuilding.loadBuildingModel(true, factor);
 
-                //     block1.addBuilding(block1TestBuilding);
-               // global.block1.setScaling(3.0f, 3.0f, 3.0f);
-               // global.block1.setTranslation(30.0f, -244.25f, -210.0f);
-               // global.block1.setRotation(10.0f, 0.0f, 0.0f);
-                global.scene.RootNode.AddChild(global.block1.getMarkerNode());
-                /*
-                                //Brian's code below //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                                //global.scene.getMarkerNode
+            //     block1.addBuilding(block1TestBuilding);
+            // global.block1.setScaling(3.0f, 3.0f, 3.0f);
+            // global.block1.setTranslation(30.0f, -244.25f, -210.0f);
+            // global.block1.setRotation(10.0f, 0.0f, 0.0f);
+            global.scene.RootNode.AddChild(global.block1.getMarkerNode());
+            /*
+                            //Brian's code below //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            //global.scene.getMarkerNode
 
-                                string[] buildingSetBlock2 = new string[] { "564_Riverside" };
-                                MarkerNode block2Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar3");
-                                block2Marker.Smoother = new DESSmoother(0.8f, 0.8f);
+                            string[] buildingSetBlock2 = new string[] { "564_Riverside" };
+                            MarkerNode block2Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar3");
+                            block2Marker.Smoother = new DESSmoother(0.8f, 0.8f);
 
-                                global.block2 = new Block(block2Marker, buildingSetBlock2);
+                            global.block2 = new Block(block2Marker, buildingSetBlock2);
 
-                                global.block2.setScaling(0.75f, 0.75f, 0.75f);         //       block2.setRotation(0.0f, -20.0f, 0.0f);                block2.setTranslation(20.0f, -60.25f, -40.0f);                                global.scene.RootNode.AddChild(block2.getMarkerNode());            }
-                            */
+                            global.block2.setScaling(0.75f, 0.75f, 0.75f);         //       block2.setRotation(0.0f, -20.0f, 0.0f);                block2.setTranslation(20.0f, -60.25f, -40.0f);                                global.scene.RootNode.AddChild(block2.getMarkerNode());            }
+                        */
         }
 
         private void createBuildings2()
         {
             string[] buildingSetBlock1 = new string[] { "3229_Broadway", "3221_Broadway", "3233_Broadway", "613_W129st", "623_W129st", "627_W129st", "651_W125st", "663_W125st", "635_W125st", "633_W125st", "628_W125st", "619_W125st" };//, "564_Riverside","603_W130st","615_W130st","617_W130st","625_W130st","631_W130st","632_W130st","641_W130st","604_W131st","605_W131st","609_W131st","614_W131st","615_W131st","620_W131st","622_W131st","624_W131st","630_W131st","635_W131st","636_W131st","638_W131st","641_W131st","653_W131st","640_W132st","2283_Joe_Dimaggio_Highway","2291_Joe_Dimaggio_Highway","2293_Joe_Dimaggio_Highway","2307_Joe_Dimaggio_Highway","2311_Joe_Dimaggio_Highway","2321_Joe_Dimaggio_Highway"  };
             MarkerNode block1Marker = new MarkerNode(global.scene.MarkerTracker, "toolbar6");
-            block1Marker.Smoother = new DESSmoother(0.8f, 0.8f);
+            block1Marker.Smoother = new DESSmoother(0.9f, 0.9f);
             global.blockMarker = block1Marker;
             global.scene.RootNode.AddChild(global.blockMarker);
 
@@ -271,12 +275,20 @@ namespace MARVIN
                 TransformNode thisTransformNode = new TransformNode();
                 thisTransformNode.Translation = new Vector3(x, y, z);
                 thisTransformNode.Scale = new Vector3(0.0073f, 0.0073f, 0.0073f);
-               // thisTransformNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
+                // thisTransformNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
 
-                /*String thisBuildingName = buildingSetBlock1[i];                Building thisBuilding = new Building(thisBuildingName);                thisBuilding.loadBuildingModel(true, 1.0f);*/                //GeometryNode thisGeometryNode = thisBuilding.getBuildingNode();
+                /*String thisBuildingName = buildingSetBlock1[i];                Building thisBuilding = new Building(thisBuildingName);                thisBuilding.loadBuildingModel(true, 1.0f);*/
+                //GeometryNode thisGeometryNode = thisBuilding.getBuildingNode();
                 //GeometryNode thisGeometryNode = new GeometryNode();
                 //thisGeometryNode.Model = new Box(2);
                 //GeometryNode thisGeometryNode = getBuildingNode(i);
+
+                Material buildingMaterial = new Material();
+                buildingMaterial.Diffuse = Color.AliceBlue.ToVector4();
+                buildingMaterial.Specular = Color.AliceBlue.ToVector4();
+                buildingMaterial.SpecularPower = 30;
+
+               thisGeometryNode.Material = buildingMaterial;
 
                 global.buildingGeomNodes.Add(thisGeometryNode);
                 global.buildingTransNodes.Add(thisTransformNode);
@@ -284,8 +296,12 @@ namespace MARVIN
             }
 
             global.blockTransNode = new TransformNode();
+            global.blockTransNode.Translation = new Vector3(5.0f, -5.0f, -50.0f);
+            //global.blockTransNode.Translation = new Vector3(5.0f, -5.0f, -50.0f);
             global.blockTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
+            global.blockTransNode.Rotation = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(2.0f), MathHelper.ToRadians(0.0f), MathHelper.ToRadians(0.0f)) * global.blockTransNode.Rotation;
             global.blockMarker.AddChild(global.blockTransNode);
+
             for (int i = 0; i < 8; i++)
             {
                 global.blockTransNode.AddChild(global.buildingTransNodes[i]);
@@ -313,80 +329,80 @@ namespace MARVIN
             return returnGeometryNode;
         }
 
-/*        public GeometryNode loadBuildingModel(bool plainOrDetailed, float factor)
-        {
-            GeometryNode buildingGeomNode;
-            FileStream file;
-            StreamReader sr;
-            if (plainOrDetailed)
-            {
-                file = new FileStream("buildings_detailed.csv", FileMode.Open, FileAccess.Read);
-                sr = new StreamReader(file);
-            }
-            else
-            {
-                file = new FileStream("buildings_plain.csv", FileMode.Open,
-                    FileAccess.Read);
-                sr = new StreamReader(file);
-            }
-            ModelLoader loader = new ModelLoader();
-            float zRot, x, y, z;
-            String[] chunks;
-            char[] seps = { ',' };
-
-            String s = "";
-            try
-            {
-                // Skip the first line which has column names
-                sr.ReadLine();
-
-                while (!sr.EndOfStream)
+        /*        public GeometryNode loadBuildingModel(bool plainOrDetailed, float factor)
                 {
-                    s = sr.ReadLine();
-
-                    if (s.Length > 0)
+                    GeometryNode buildingGeomNode;
+                    FileStream file;
+                    StreamReader sr;
+                    if (plainOrDetailed)
                     {
-                        chunks = s.Split(seps);
+                        file = new FileStream("buildings_detailed.csv", FileMode.Open, FileAccess.Read);
+                        sr = new StreamReader(file);
+                    }
+                    else
+                    {
+                        file = new FileStream("buildings_plain.csv", FileMode.Open,
+                            FileAccess.Read);
+                        sr = new StreamReader(file);
+                    }
+                    ModelLoader loader = new ModelLoader();
+                    float zRot, x, y, z;
+                    String[] chunks;
+                    char[] seps = { ',' };
 
-                        if (chunks[0] == buildingName)
+                    String s = "";
+                    try
+                    {
+                        // Skip the first line which has column names
+                        sr.ReadLine();
+
+                        while (!sr.EndOfStream)
                         {
-                            buildingGeomNode = new GeometryNode(chunks[0]);
-                            buildingGeomNode.Model = (Model)loader.Load("", "Detailed/" + chunks[0]);
-                            buildingGeomNode.AddToPhysicsEngine = true;
-                            buildingGeomNode.Physics.Shape = ShapeType.Box;
-                            buildingGeomNode.Model.CastShadows = true;
-                            buildingGeomNode.Model.OffsetToOrigin = true; ///////////////////////////////////////////////////////////////////
+                            s = sr.ReadLine();
 
-                            zRot = (float)Double.Parse(chunks[1]);
-                            x = (float)Double.Parse(chunks[2]);
-                            y = (float)Double.Parse(chunks[3]);
-                            z = (float)Double.Parse(chunks[4]);
+                            if (s.Length > 0)
+                            {
+                                chunks = s.Split(seps);
 
-                            //               buildingTransNode = new TransformNode();
-                            //               buildingTransNode.Translation = new Vector3(x, y, z * factor);
-                            //               buildingTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
-                            //                   (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
-                            //                   MathHelper.PiOver2);
+                                if (chunks[0] == buildingName)
+                                {
+                                    buildingGeomNode = new GeometryNode(chunks[0]);
+                                    buildingGeomNode.Model = (Model)loader.Load("", "Detailed/" + chunks[0]);
+                                    buildingGeomNode.AddToPhysicsEngine = true;
+                                    buildingGeomNode.Physics.Shape = ShapeType.Box;
+                                    buildingGeomNode.Model.CastShadows = true;
+                                    buildingGeomNode.Model.OffsetToOrigin = true; ///////////////////////////////////////////////////////////////////
 
-                            buildingMaterial = new Material();
-                            buildingMaterial.Diffuse = Color.White.ToVector4();
-                            buildingMaterial.Specular = Color.White.ToVector4();
-                            buildingMaterial.SpecularPower = 10;
+                                    zRot = (float)Double.Parse(chunks[1]);
+                                    x = (float)Double.Parse(chunks[2]);
+                                    y = (float)Double.Parse(chunks[3]);
+                                    z = (float)Double.Parse(chunks[4]);
 
-                            buildingGeomNode.Material = buildingMaterial;
+                                    //               buildingTransNode = new TransformNode();
+                                    //               buildingTransNode.Translation = new Vector3(x, y, z * factor);
+                                    //               buildingTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
+                                    //                   (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
+                                    //                   MathHelper.PiOver2);
+
+                                    buildingMaterial = new Material();
+                                    buildingMaterial.Diffuse = Color.White.ToVector4();
+                                    buildingMaterial.Specular = Color.White.ToVector4();
+                                    buildingMaterial.SpecularPower = 10;
+
+                                    buildingGeomNode.Material = buildingMaterial;
+                                }
+                            }
                         }
                     }
-                }
-            }
-            catch (Exception exp)
-            {
-                Console.WriteLine("buildings.csv has wrong format: " + s);
-            }
+                    catch (Exception exp)
+                    {
+                        Console.WriteLine("buildings.csv has wrong format: " + s);
+                    }
 
-            sr.Close();
-            file.Close();
-        }
-*/
+                    sr.Close();
+                    file.Close();
+                }
+        */
         private void CreateTerrain(float factor)
         {
             float y_gap = 120.0f / 6;
@@ -441,7 +457,7 @@ namespace MARVIN
             PrimitiveMesh terrain = new PrimitiveMesh();
 
             VertexPositionNormalTexture[] verts = new VertexPositionNormalTexture[35];
-            
+
             int index = 0;
             for (int i = 0; i < 5; i++)
             {
@@ -449,7 +465,7 @@ namespace MARVIN
                 {
                     index = i * 7 + j;
 
-                    verts[index].Position = new Vector3(j * y_gap + global.y_shift, i * x_gap + global.x_shift, 
+                    verts[index].Position = new Vector3(j * y_gap + global.y_shift, i * x_gap + global.x_shift,
                         terrain_heights[j][i]);
                     verts[index].TextureCoordinate = new Vector2(j * tu_gap, 1 - i * tv_gap);
                     verts[index].Normal = Vector3.UnitZ;
@@ -500,11 +516,7 @@ namespace MARVIN
             terrainMaterial.Diffuse = Color.White.ToVector4();
             terrainMaterial.Specular = Color.White.ToVector4();
             terrainMaterial.SpecularPower = 10;
-            //Texture2D mville = Content.Load<Texture2D>("Textures//Manhattanville");
-            //terrainMaterial.Texture = mville;
             terrainMaterial.Texture = Content.Load<Texture2D>("Textures//Manhattanville");
-            //global.notebookTopTexture = mville;
-            //notebook.createNotebook(mville);
 
             terrainNode.Material = terrainMaterial;
 
@@ -513,7 +525,7 @@ namespace MARVIN
             terrainTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
                 MathHelper.PiOver2);
 
-            global.groundMarkerNode.AddChild(terrainTransNode);
+            global.indoorMarkerNode.AddChild(terrainTransNode);
             terrainTransNode.AddChild(terrainNode);
 
             CreateSkirf(terrain_heights, terrainTransNode);
@@ -540,8 +552,8 @@ namespace MARVIN
                 verts[index].Normal = Vector3.UnitY;
                 index++;
 
-                verts[index].Position = new Vector3((6 - i) * y_gap + global.y_shift, 71.1f + global.x_shift, 
-                    terrainHeights[6-i][4]);
+                verts[index].Position = new Vector3((6 - i) * y_gap + global.y_shift, 71.1f + global.x_shift,
+                    terrainHeights[6 - i][4]);
                 verts[index].Normal = -Vector3.UnitY;
                 index++;
 
@@ -645,8 +657,8 @@ namespace MARVIN
 
         private void LoadPlainBuildings(float factor)
         {
-            Console.WriteLine("Loading plain buildings...");            FileStream file = new FileStream("buildings_plain.csv", FileMode.Open,
-                FileAccess.Read);
+            Console.WriteLine("Loading plain buildings..."); FileStream file = new FileStream("buildings_plain.csv", FileMode.Open,
+     FileAccess.Read);
             StreamReader sr = new StreamReader(file);
 
             //global.buildings = new List<GeometryNode>();
@@ -681,7 +693,7 @@ namespace MARVIN
                         building.AddToPhysicsEngine = true;
                         building.Physics.Shape = ShapeType.Box;
 
-                       // global.buildings.Add(building);
+                        // global.buildings.Add(building);
 
                         zRot = (float)Double.Parse(chunks[1]);
                         x = (float)Double.Parse(chunks[2]);
@@ -694,7 +706,7 @@ namespace MARVIN
                             (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
                             MathHelper.PiOver2);
                         transNode.Scale = Vector3.One * scale;
-                        
+
 
                         Material buildingMaterial = new Material();
                         buildingMaterial.Diffuse = Color.White.ToVector4();
@@ -717,77 +729,60 @@ namespace MARVIN
             file.Close();
         }
 
-        private void LoadDetailedBuildings(float factor)
+        private void LoadDetailedBuildings(float factor, string[] address)
         {
             Console.WriteLine("Loading detailed buildings...");
-            FileStream file = new FileStream("buildings_detailed.csv", FileMode.Open, FileAccess.Read);
-            StreamReader sr = new StreamReader(file);
+            //   FileStream file = new FileStream("buildings_detailed.csv", FileMode.Open, FileAccess.Read);
+            //   StreamReader sr = new StreamReader(file);
 
             //global.buildings = new List<GeometryNode>();
             ModelLoader loader = new ModelLoader();
 
+            global.buildingGeomNodes = new List<GeometryNode>(address.Length);
+            global.buildingTransNodes = new List<TransformNode>(address.Length);
+
             float scale = 0.0073f;
-            float zRot, x, y, z;
-            String[] chunks;
-            char[] seps = { ',' };
+            //      String[] chunks;
+            //      char[] seps = { ',' };
 
-            String s = "";
-            try
+            //      String s = "";
+            //      try
+            //      {
+            // Skip the first line which has column names
+            //          sr.ReadLine();
+
+            global.parentTrans = new TransformNode();
+            global.parentTrans.Scale = Vector3.One * scale;
+            global.parentTrans.Translation = new Vector3(-33.5f, -54.25f, 0);
+            global.parentTrans.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
+            global.indoorMarkerNode.AddChild(global.parentTrans);
+
+            for (int i = 0; i < address.Length; i++)
             {
-                // Skip the first line which has column names
-                sr.ReadLine();
+                GeometryNode building = new GeometryNode(address[i]);
+                building.Model = (Model)loader.Load("", "Detailed/" + address[i]);
+                building.AddToPhysicsEngine = true;
+                building.Physics.Shape = ShapeType.Box;
 
-                global.parentTrans = new TransformNode();
-                global.parentTrans.Scale = Vector3.One * scale;
-                global.parentTrans.Translation = new Vector3(-33.5f, -54.25f, 0);
-                global.parentTrans.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
-                global.groundMarkerNode.AddChild(global.parentTrans);
+                TransformNode transNode = new TransformNode();
+                transNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
+                    (float)(0 * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
+                    MathHelper.PiOver2);
 
-                while (!sr.EndOfStream)
-                {
-                    s = sr.ReadLine();
+                Material buildingMaterial = new Material();
+                buildingMaterial.Diffuse = Color.White.ToVector4();
+                buildingMaterial.Specular = Color.Beige.ToVector4();
+                buildingMaterial.SpecularPower = 10;
 
-                    if (s.Length > 0)
-                    {
-                        chunks = s.Split(seps);
+                building.Material = buildingMaterial;
 
-                        GeometryNode building = new GeometryNode(chunks[0]);
-                        building.Model = (Model)loader.Load("", "Detailed/" + chunks[0]);
-                        building.AddToPhysicsEngine = true;
-                        building.Physics.Shape = ShapeType.Box;
+                global.parentTrans.AddChild(transNode);
+                transNode.AddChild(building);
 
-                        //global.buildings.Add(building);
+                global.buildingGeomNodes.Add(building);
+                global.buildingTransNodes.Add(transNode);
 
-                        zRot = (float)Double.Parse(chunks[1]);
-                        x = (float)Double.Parse(chunks[2]);
-                        y = (float)Double.Parse(chunks[3]);
-                        z = (float)Double.Parse(chunks[4]);
-
-                        TransformNode transNode = new TransformNode();
-                        transNode.Translation = new Vector3(x, y, z * factor);
-                        transNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
-                            (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
-                            MathHelper.PiOver2);
-
-                        Material buildingMaterial = new Material();
-                        buildingMaterial.Diffuse = Color.White.ToVector4();
-                        buildingMaterial.Specular = Color.White.ToVector4();
-                        buildingMaterial.SpecularPower = 10;
-
-                        building.Material = buildingMaterial;
-
-                        global.parentTrans.AddChild(transNode);
-                        transNode.AddChild(building);
-                    }
-                }
             }
-            catch (Exception exp)
-            {
-                Console.WriteLine("buildings.csv has wrong format: " + s);
-            }
-
-            sr.Close();
-            file.Close();
         }
 
         public void transferBuildingToNotebook()
@@ -796,21 +791,13 @@ namespace MARVIN
             GeometryNode buildingToTransfer = getBuildingNode(global.indexOfObjectBeingHighlighted);
 
             int count1 = global.notebookShowcaseTransNode.Children.Count;
-            Console.WriteLine("Before: " + count1);    
+            Console.WriteLine("Before: " + count1);
             //global.notebookShowcaseTransNode.RemoveChild(global.notebookShowcaseGeomNode); ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             global.notebookShowcaseModelTransNode.RemoveChildren();
             int count2 = global.notebookShowcaseTransNode.Children.Count;
             Console.WriteLine("After: " + count2);
 
-            //global.notebookShowcaseModelTransNode.Translation = new Vector3(-20.0f, 0.0f, 7.0f); //(-20.0f, ...)
-            //global.notebookShowcaseModelTransNode.Scale = new Vector3(4.5f, 4.5f, 4.5f);///////////////Changed from 4.5 to 1.5
-            global.notebookShowcaseModelTransNode.Rotation = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Rotation;
-            global.notebookShowcaseModelTransNode.Rotation = Quaternion.Concatenate(global.notebookShowcaseModelTransNode.Rotation, 
-                Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathHelper.PiOver2));
-            global.notebookShowcaseModelTransNode.Scale = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Scale;
-            global.notebookShowcaseModelTransNode.Translation = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Translation;
-            global.notebookShowcaseModelTransNode.Translation += new Vector3(-20.0f, 0.0f, 7.0f);
-            global.notebookShowcaseModelTransNode.AddChild(buildingToTransfer); 
+            //global.notebookShowcaseModelTransNode.Translation = new Vector3(-20.0f, 0.0f, 7.0f); //(-20.0f, ...)            //global.notebookShowcaseModelTransNode.Scale = new Vector3(4.5f, 4.5f, 4.5f);///////////////Changed from 4.5 to 1.5            global.notebookShowcaseModelTransNode.Rotation = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Rotation;            global.notebookShowcaseModelTransNode.Rotation = Quaternion.Concatenate(global.notebookShowcaseModelTransNode.Rotation,                 Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathHelper.PiOver2));            global.notebookShowcaseModelTransNode.Scale = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Scale;            global.notebookShowcaseModelTransNode.Translation = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Translation;            global.notebookShowcaseModelTransNode.Translation += new Vector3(-20.0f, 0.0f, 7.0f);            global.notebookShowcaseModelTransNode.AddChild(buildingToTransfer);
             //global.notebookShowcaseGeomNode = buildingToTransfer;
             //global.notebookShowcaseTransNode.AddChild(global.leftConeTransNode);//////////////////////////////////////////////////////
             //global.leftConeTransNode.AddChild(global.leftConeGeomNode);//YYY******New!
@@ -852,7 +839,7 @@ namespace MARVIN
             {
                 hideAttributeLabels();
             }
-            
+
             base.Draw(gameTime);
 
             // Draw a 2D text string at the top-left of the screen
@@ -920,7 +907,7 @@ namespace MARVIN
                     global.label = "Building " + global.indexOfBuildingBeingSelected + " selected.";
 
                     global.resetObjectColors();
-                    
+
                     //Draw Bounding Box around building //////////////////////////////////////////////////////////////////////////////////////////////////
                     transferBuildingToNotebook();
                 }
@@ -973,7 +960,7 @@ namespace MARVIN
                     Quaternion extraRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, 0.1f);
                     global.notebookShowcaseModelTransNode.Rotation = Quaternion.Concatenate(global.notebookShowcaseModelTransNode.Rotation, extraRotation);
                 }
-                else if(global.typeOfObjectBeingHighlighted == global.RIGHT_CONE)
+                else if (global.typeOfObjectBeingHighlighted == global.RIGHT_CONE)
                 {
                     Quaternion extraRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -0.1f);
                     global.notebookShowcaseModelTransNode.Rotation = Quaternion.Concatenate(global.notebookShowcaseModelTransNode.Rotation, extraRotation);

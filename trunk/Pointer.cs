@@ -223,7 +223,18 @@ namespace MARVIN
         {
             if (typeOfNode == global.BUILDING)
             {
-                Vector4 homog_buildingWorldCoords = Vector4.Transform(global.ORIGIN, global.buildingTransNodes[index].WorldTransformation * global.blockMarker.WorldTransformation);
+                Vector4 homog_buildingWorldCoords;
+
+                if (global.outdoors)
+                {
+                    homog_buildingWorldCoords = Vector4.Transform(global.ORIGIN, global.buildingTransNodes[index].WorldTransformation * global.blockTransNode.WorldTransformation * global.blockMarker.WorldTransformation);
+                }
+                else 
+                {
+                    homog_buildingWorldCoords = Vector4.Transform(global.ORIGIN, global.buildingTransNodes[index].WorldTransformation * global.indoorMarkerNode.WorldTransformation);
+             
+                }
+           
                 Vector3 inhomog_buildingWorldCoords = new Vector3(homog_buildingWorldCoords.X, homog_buildingWorldCoords.Y, homog_buildingWorldCoords.Z);
                 Vector3 homog_buildingScreenCoords = global.graphics.GraphicsDevice.Viewport.Project(inhomog_buildingWorldCoords,
                     State.ProjectionMatrix, State.ViewMatrix, Matrix.Identity);
