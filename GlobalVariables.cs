@@ -80,7 +80,7 @@ namespace MARVIN
         public int typeOfObjectBeingHighlighted = -1;
         public int indexOfObjectBeingHighlighted = -1;
         public int typeOfObjectBeingSelected = -1;
-        public int indexOfObjectBeingSelected = -1;
+        public int indexOfBuildingBeingSelected = -1;
         public int attributeCurrentlyBeingViewed = -1;
         public int NOTHING = -1;
         public int BUILDING = 1;
@@ -159,6 +159,7 @@ namespace MARVIN
 
         public void resetObjectColors()
         {
+            //Recolor attributes
             for (int i = 0; i < 8; i++)
             {
                 attributeBoxes[i].Model = new Box(3);
@@ -170,7 +171,14 @@ namespace MARVIN
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    buildingGeomNodes[i].Material.Diffuse = Color.White.ToVector4();
+                    if (i == indexOfBuildingBeingSelected)
+                    {
+                        buildingGeomNodes[i].Material.Diffuse = Color.Goldenrod.ToVector4();
+                    }
+                    else
+                    {
+                        buildingGeomNodes[i].Material.Diffuse = Color.White.ToVector4();
+                    }
                 }
 
                 leftConeGeomNode.Material.Emissive = Color.RosyBrown.ToVector4();
@@ -178,24 +186,44 @@ namespace MARVIN
             }
             else
             {
-                for (int i = 0; i < 8; i++)
-                {
-                    //PUT GRADIENT STUFF HERE!!!!!!!!!
-                    //buildingGeomNodes[i].Material.Diffuse = Color.White.ToVector4();
+                Attribute currentlyViewedAttribute = attributes[attributeCurrentlyBeingViewed];
 
-                    //if this building does not have a value assigned for the currently viewed attribute
-                    Attribute currentlyViewedAttribute = attributes[attributeCurrentlyBeingViewed];
-                    Attribute buildingAttribute = buildingList[i].getAttribute(currentlyViewedAttribute.name);
-                    if (buildingAttribute == null)
+                if (currentlyViewedAttribute.name != "UNDEFINED")
+                {
+                    for (int i = 0; i < 8; i++) //for each building
                     {
-                        buildingGeomNodes[i].Material.Diffuse = Color.White.ToVector4();
-                    }
-                    else
-                    {
-                        buildingGeomNodes[i].Material.Diffuse = getGradientColor(buildingAttribute.value,
-                            currentlyViewedAttribute.min, currentlyViewedAttribute.max);
+                        //PUT GRADIENT STUFF HERE!!!!!!!!!
+                        //buildingGeomNodes[i].Material.Diffuse = Color.White.ToVector4();
+
+                        //if this building does not have a value assigned for the currently viewed attribute
+                        Attribute buildingAttribute = buildingList[i].getAttribute(currentlyViewedAttribute.name);
+                        if (buildingAttribute == null)
+                        {
+                            buildingGeomNodes[i].Material.Diffuse = Color.White.ToVector4();
+                        }
+                        else
+                        {
+                            buildingGeomNodes[i].Material.Diffuse = getGradientColor(buildingAttribute.value,
+                                currentlyViewedAttribute.min, currentlyViewedAttribute.max);
+                        }
                     }
                 }
+                else
+                {
+                    for (int i = 0; i < 8; i++) //for each building
+                    {
+                        if (i == indexOfBuildingBeingSelected)
+                        {
+                            buildingGeomNodes[i].Material.Diffuse = Color.Goldenrod.ToVector4();
+                        }
+                        else
+                        {
+                            buildingGeomNodes[i].Material.Diffuse = Color.White.ToVector4();
+                        }
+                    }
+                }
+                
+                
 
                 for (int i = 0; i < 8; i++)
                 {
@@ -252,9 +280,9 @@ namespace MARVIN
                     float weightOfMax = (float) (valueAboveMin / range);
 
 
-                    returnColor.X = ((1 - weightOfMax) * Color.LightGreen.ToVector4().X) * (weightOfMax * Color.Yellow.ToVector4().X);
-                    returnColor.Y = ((1 - weightOfMax) * Color.LightGreen.ToVector4().Y) * (weightOfMax * Color.Yellow.ToVector4().Y);
-                    returnColor.Z = ((1 - weightOfMax) * Color.LightGreen.ToVector4().Z) * (weightOfMax * Color.Yellow.ToVector4().Z);
+                    returnColor.X = ((1 - weightOfMax) * Color.LightGreen.ToVector4().X) + (weightOfMax * Color.Yellow.ToVector4().X);
+                    returnColor.Y = ((1 - weightOfMax) * Color.LightGreen.ToVector4().Y) + (weightOfMax * Color.Yellow.ToVector4().Y);
+                    returnColor.Z = ((1 - weightOfMax) * Color.LightGreen.ToVector4().Z) + (weightOfMax * Color.Yellow.ToVector4().Z);
                     returnColor.W = 1;
                 }
                 else
@@ -264,9 +292,9 @@ namespace MARVIN
                     float weightOfMax = (float)(valueAboveMedian / range);
 
 
-                    returnColor.X = ((1 - weightOfMax) * Color.Yellow.ToVector4().X) * (weightOfMax * Color.Red.ToVector4().X);
-                    returnColor.Y = ((1 - weightOfMax) * Color.Yellow.ToVector4().Y) * (weightOfMax * Color.Red.ToVector4().Y);
-                    returnColor.Z = ((1 - weightOfMax) * Color.Yellow.ToVector4().Z) * (weightOfMax * Color.Red.ToVector4().Z);
+                    returnColor.X = ((1 - weightOfMax) * Color.Yellow.ToVector4().X) + (weightOfMax * Color.Red.ToVector4().X);
+                    returnColor.Y = ((1 - weightOfMax) * Color.Yellow.ToVector4().Y) + (weightOfMax * Color.Red.ToVector4().Y);
+                    returnColor.Z = ((1 - weightOfMax) * Color.Yellow.ToVector4().Z) + (weightOfMax * Color.Red.ToVector4().Z);
                     returnColor.W = 1;
                 }
             }

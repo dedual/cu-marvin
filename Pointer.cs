@@ -186,11 +186,12 @@ namespace MARVIN
                 global.highlight(global.indexOfObjectBeingHighlighted, global.typeOfObjectBeingHighlighted, Color.Yellow);
                 if ((global.typeOfObjectBeingHighlighted == global.LEFT_CONE) || (global.typeOfObjectBeingHighlighted == global.RIGHT_CONE))
                 {
-                    global.label = "Rotate building?";
+                    //global.label = "Rotate building?";
                 }
                 else if (global.typeOfObjectBeingHighlighted == global.BUILDING)
                 {
-                    global.label = "Select " + global.indexOfObjectBeingHighlighted + "?";
+                    //global.label = "Select " + global.indexOfObjectBeingHighlighted + "?";
+                    //global.label = "Rotate building?";
                 }
                 else if (global.typeOfObjectBeingHighlighted == global.ATTRIBUTE)
                 {
@@ -211,7 +212,7 @@ namespace MARVIN
                 global.pointerMaterial.Emissive = Color.Red.ToVector4();
                 global.pointerTip.Material = global.pointerMaterial;
                 global.pointerSegment.Material = global.pointerMaterial;
-                global.label = "Nothing is highlighted.";
+                //global.label = "Nothing is highlighted.";
             }
 
 
