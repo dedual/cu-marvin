@@ -26,8 +26,8 @@ namespace MARVIN
         {
             try
             {
-                global.doc = new XmlDocument();
-                global.doc.Load(global.xmlFilename);
+                doc = new XmlDocument();
+                doc.Load(filename);
                 //Initializes the global attributes list
                 global.attributes = new List<Attribute>();
 
