@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using System.IO;
 
 using Microsoft.Xna.Framework;
@@ -34,6 +35,7 @@ namespace MARVIN
 {
     public class GlobalVariables
     {
+        public XmlDocument doc;
         public bool outdoors;
 
         public GraphicsDeviceManager graphics; //Graphics Device
@@ -101,6 +103,7 @@ namespace MARVIN
         public Vector4[] colorPalette = new Vector4[8];
         public Vector4 ORIGIN = new Vector4(0, 0, 0, 1);
         public String selectedBuildingName = null;
+
 
         public Block block1, block2;
 
