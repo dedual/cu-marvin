@@ -36,8 +36,17 @@ namespace MARVIN
         TransformNode buildingTransNode; //Transform node for this building.
        
         //Building properties
-        System.String buildingName; //Building Name
-       // System.String buildingInfo; //Building info
+        String buildingName; //Building Name
+        String buildingAddress; //Building Address
+        String yearBuilt; //Year building was built;
+        String stories; // Number of stories
+        String saleDate; // sale Date of building
+        String buildingType; // building type
+        String buildingClass; // building class
+        String toxicSites; //Toxic Sites
+        String airRights; //air Rights
+
+        System.String buildingInfo; //Building info
         List<Attribute> attributes = new List<Attribute>(); //size 8
 
         //Constructors
@@ -135,10 +144,101 @@ namespace MARVIN
         {
             return buildingName;
         }
+
+        public String getAddress()
+        {
+            return buildingAddress;
+        }
+
+        public String getYearBuilt()
+        {
+            return yearBuilt;
+        }
+
+        public String getToxicSites()
+        {
+            return toxicSites;
+        }
+
+        public String getStories()
+        {
+            return stories;
+        }
+
+        public String getSaleDate()
+        {
+            return saleDate;
+        }
+
+        public String getType()
+        {
+            return buildingType;
+        }
+
+        public String getClass()
+        {
+            return buildingClass;
+        }
+
+        public String getAirRights()
+        {
+            return airRights;
+        }
+        public String getDescription()
+        {
+            return buildingInfo;
+        }
+
+
         public void setBuildingName(System.String _name)
         {
             buildingName = _name;
         }
+
+        public void setAddress(String _address)
+        {
+             buildingAddress = _address;
+        }
+
+        public void setStories(String _stories)
+        {
+            stories = _stories;
+        }
+
+        public void setYearBuilt(String _year)
+        {
+            yearBuilt = _year;
+        }
+
+        public void setSaleDate(String _date)
+        {
+            saleDate = _date;
+        }
+
+        public void setType(String _type)
+        {
+            buildingType = _type;
+        }
+
+        public void setClass(String _class)
+        {
+            buildingClass = _class;
+        }
+
+        public void setToxicSites(String _sites)
+        {
+            toxicSites = _sites;
+        }
+
+        public void setAirRights(String _rights)
+        {
+            airRights = _rights;
+        }
+        public void setDescription(String _info)
+        {
+            buildingInfo = _info;
+        }
+
 
         public void loadBuildingModel(bool plainOrDetailed, float factor)
         {
