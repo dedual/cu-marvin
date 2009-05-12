@@ -26,9 +26,8 @@ namespace MARVIN
         {
             try
             {
-                doc = new XmlDocument();
-                doc.Load(filename);
-
+                global.doc = new XmlDocument();
+                global.doc.Load(global.xmlFilename);
                 //Initializes the global attributes list
                 global.attributes = new List<Attribute>();
 
@@ -75,11 +74,40 @@ namespace MARVIN
                 int thisAttributeValue;
                 String thisAttributeValueString;
                 String thisBuildingName;
+                String thisBuildingAddress;
+                String thisBuildingStories;
+                String thisBuildingToxicSites;
+                String thisBuildingAirRights;
+                String thisBuildingYearBuilt;
+                String thisBuildingDescription;
+                String thisBuildingType;
+                String thisBuildingClass;
+                String thisBuildingSaleDate;
                 for (int i = 0; i < buildingXMLNodes.Count; i++)
                 {
                     thisXMLElement = (XmlElement) buildingXMLNodes[i];
                     thisBuildingName = thisXMLElement.Attributes["Name"].Value;
+                    thisBuildingAddress = thisXMLElement.Attributes["Address"].Value;
+                    thisBuildingStories = thisXMLElement.Attributes["Stories"].Value;
+                    thisBuildingToxicSites = thisXMLElement.Attributes["Toxic_Sites"].Value;
+                    thisBuildingYearBuilt = thisXMLElement.Attributes["Year_Built"].Value;
+                    thisBuildingClass = thisXMLElement.Attributes["Building_Class"].Value;
+                    thisBuildingType = thisXMLElement.Attributes["Building_Type"].Value;
+                    thisBuildingDescription = thisXMLElement.Attributes["Description"].Value;
+                    thisBuildingSaleDate = thisXMLElement.Attributes["Sale_Date"].Value;
+                    thisBuildingAirRights = thisXMLElement.Attributes["Unused_Buildable_Square_Feet"].Value;
+                    
                     Building thisNewBuilding = new Building(thisBuildingName, ref global);
+                    thisNewBuilding.setAddress(thisBuildingAddress);
+                    thisNewBuilding.setAirRights(thisBuildingAirRights);
+                    thisNewBuilding.setSaleDate(thisBuildingSaleDate);
+                    thisNewBuilding.setDescription(thisBuildingDescription);
+                    thisNewBuilding.setClass(thisBuildingClass);
+                    thisNewBuilding.setType(thisBuildingType);
+                    thisNewBuilding.setYearBuilt(thisBuildingYearBuilt);
+                    thisNewBuilding.setStories(thisBuildingStories);
+                    thisNewBuilding.setToxicSites(thisBuildingToxicSites);
+
 
                     for (int j = 0; j < global.attributes.Count; j++)
                     {
@@ -159,41 +187,31 @@ namespace MARVIN
                 rootNode.AppendChild(AttributeNode);
             }     
             
-            foreach(XmlNode node in doc.GetElementsByTagName("Building"))
+            foreach(Building building in global.buildingList)
             {
-                XmlElement elementNodeFromOldXml = (XmlElement)node;
-                String buildingName = elementNodeFromOldXml.Attributes["Name"].Value;
-                String buildingAddress = elementNodeFromOldXml.Attributes["Address"].Value;
-                String buildingStories = elementNodeFromOldXml.Attributes["Stories"].Value;
-                String yearBuilt = elementNodeFromOldXml.Attributes["Year_Built"].Value;
-                String saleDate = elementNodeFromOldXml.Attributes["Sale_Date"].Value;
-                String buildingType = elementNodeFromOldXml.Attributes["Building_Type"].Value;
-                String buildingClass = elementNodeFromOldXml.Attributes["Building_Class"].Value;
-                String toxicSites = elementNodeFromOldXml.Attributes["Toxic_Sites"].Value;
-                String unusedBuildableSqFt = elementNodeFromOldXml.Attributes["Unused_Buildable_Square_Feet"].Value;
-
+      
                 //Now that we have the building name, lets use it to write to the newXML
                 XmlElement buildingNode = doc.CreateElement("Building");
-                buildingNode.SetAttribute("Name", buildingName);
-                buildingNode.SetAttribute("Address",buildingAddress);
-                buildingNode.SetAttribute("Stories", buildingStories);
-                buildingNode.SetAttribute("Year_Built",yearBuilt);
-                buildingNode.SetAttribute("Sale_Date",saleDate);
-                buildingNode.SetAttribute("Building_Type",buildingType);
-                buildingNode.SetAttribute("Building_Class",buildingClass);
-                buildingNode.SetAttribute("Toxic_Sites",toxicSites);
-                buildingNode.SetAttribute("Unused_Buildable_Square_Feet",unusedBuildableSqFt);
+                buildingNode.SetAttribute("Name", building.getBuildingName());
+                buildingNode.SetAttribute("Address",building.getAddress());
+                buildingNode.SetAttribute("Stories", building.getStories());
+                buildingNode.SetAttribute("Year_Built",building.getYearBuilt());
+                buildingNode.SetAttribute("Sale_Date",building.getSaleDate());
+                buildingNode.SetAttribute("Building_Type",building.getType());
+                buildingNode.SetAttribute("Building_Class",building.getClass());
+                buildingNode.SetAttribute("Toxic_Sites", building.getToxicSites());
+                buildingNode.SetAttribute("Unused_Buildable_Square_Feet", building.getAirRights());
 
                 foreach (Attribute buildingAttribute in global.attributes)
                 {
                     String attributeName = buildingAttribute.value.ToString();
-                    Building building = global.block1.getBuilding(buildingAddress);
+                   
                     buildingNode.SetAttribute(attributeName,building.getAttributeValue(attributeName).ToString());
                 }
                 rootNode.AppendChild(buildingNode);
             }
  
-            newXML.Save("newXMLFile3.xml");
+            newXML.Save("XMLFile3.xml");
         }
     }
     //end class
