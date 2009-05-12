@@ -41,7 +41,7 @@ namespace MARVIN
         static GlobalVariables global;
         static Pointer pointer;
         static Notebook notebook;
-        static XMLReader xmlReader;
+        static XMLManager xmlManager;
 
         
 
@@ -55,7 +55,7 @@ namespace MARVIN
 
             pointer = new Pointer(ref global);
             notebook = new Notebook(ref global);
-            xmlReader = new XMLReader(ref global);
+            xmlManager = new XMLManager(ref global);
         }
 
         /// <summary>
@@ -72,6 +72,9 @@ namespace MARVIN
             // Initialize the scene graph
             scene = new Scene(this);
             global.setScene(ref scene);
+
+            //Initialize the labels
+            global.initializeLabels();
 
             // Use the newton physics engine to perform collision detection
             global.scene.PhysicsEngine = new NewtonPhysics();
@@ -132,6 +135,7 @@ namespace MARVIN
                 Console.WriteLine("ERROR: " + xmle.Message);
             }
            // xmlReader.parseXMLBuildingFile(global.xmlFilename);
+            xmlManager.parseXMLBuildingFile(global.xmlFilename);
 
             // Show Frames-Per-Second on the screen for debugging
             State.ShowFPS = true;
@@ -139,7 +143,7 @@ namespace MARVIN
             GoblinXNA.UI.Notifier.FadeOutTime = 1;
 
             // Add a mouse click callback function to perform picking when mouse is clicked
-            MouseInput.Instance.MouseClickEvent    += new HandleMouseClick(MouseClickHandler);
+            MouseInput.Instance.MouseClickEvent += new HandleMouseClick(MouseClickHandler);
             // Add a mouse click callback function to perform picking when mouse is clicked
             MouseInput.Instance.MousePressEvent += new HandleMousePress(MousePressHandler);
 
@@ -170,8 +174,8 @@ namespace MARVIN
             // on the device driver.  The values set here will work for a Microsoft VX 6000, 
             // and many other webcams.
             DirectShowCapture captureDevice = new DirectShowCapture();
-            captureDevice.InitVideoCapture(2, FrameRate._30Hz, Resolution._640x480,ImageFormat.R8G8B8_24, false);            
-           // captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
+            captureDevice.InitVideoCapture(0, FrameRate._30Hz, Resolution._640x480,ImageFormat.R8G8B8_24, false);            
+            //captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
             // Add this video capture device to the scene so that it can be used for
             // the marker tracker
             global.scene.AddVideoCaptureDevice(captureDevice);
@@ -292,12 +296,20 @@ namespace MARVIN
         public GeometryNode getBuildingNode(int index)
         {
             GeometryNode returnGeometryNode = new GeometryNode();
-            returnGeometryNode.Model = new Box(2);
+            /*returnGeometryNode.Model = new Box(2);
 
             Material thisMaterial = new Material();
             thisMaterial.Diffuse = global.colorPalette[index];
             returnGeometryNode.Material = thisMaterial;
 
+            return returnGeometryNode;*/
+
+            returnGeometryNode.Model = global.buildingGeomNodes[index].Model;
+            Material thisMaterial = new Material();
+            thisMaterial.Diffuse = Color.White.ToVector4();
+            thisMaterial.Specular = Color.White.ToVector4();
+            thisMaterial.SpecularPower = 30;
+            returnGeometryNode.Material = thisMaterial;
             return returnGeometryNode;
         }
 
@@ -790,22 +802,14 @@ namespace MARVIN
             int count2 = global.notebookShowcaseTransNode.Children.Count;
             Console.WriteLine("After: " + count2);
 
-
-            //if (global.notebookShowcaseTransNode.Children.Count > 1)
-            //{
-            //    global.notebookShowcaseTransNode.RemoveChild(global.notebookShowcaseGeomNode);
-            //}
-
-            
-
-            //TransformNode showcaseTransNode = new TransformNode();
-            //showcaseTransNode.Scale = new Vector3(5.0f, 5.0f, 5.0f);
-           // showcaseTransNode.AddChild(buildingToTransfer);
-
-
-            //global.notebookShowcaseTransNode = showcaseTransNode;
-            global.notebookShowcaseModelTransNode.Translation = new Vector3(-20.0f, 0.0f, 7.0f); //(-20.0f, ...)
-            global.notebookShowcaseModelTransNode.Scale = new Vector3(4.5f, 4.5f, 4.5f);///////////////Changed from 4.5 to 1.5
+            //global.notebookShowcaseModelTransNode.Translation = new Vector3(-20.0f, 0.0f, 7.0f); //(-20.0f, ...)
+            //global.notebookShowcaseModelTransNode.Scale = new Vector3(4.5f, 4.5f, 4.5f);///////////////Changed from 4.5 to 1.5
+            global.notebookShowcaseModelTransNode.Rotation = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Rotation;
+            global.notebookShowcaseModelTransNode.Rotation = Quaternion.Concatenate(global.notebookShowcaseModelTransNode.Rotation, 
+                Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathHelper.PiOver2));
+            global.notebookShowcaseModelTransNode.Scale = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Scale;
+            global.notebookShowcaseModelTransNode.Translation = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Translation;
+            global.notebookShowcaseModelTransNode.Translation += new Vector3(-20.0f, 0.0f, 7.0f);
             global.notebookShowcaseModelTransNode.AddChild(buildingToTransfer); 
             //global.notebookShowcaseGeomNode = buildingToTransfer;
             //global.notebookShowcaseTransNode.AddChild(global.leftConeTransNode);//////////////////////////////////////////////////////
@@ -815,20 +819,6 @@ namespace MARVIN
 
             int count3 = global.notebookShowcaseTransNode.Children.Count;
             Console.WriteLine("After: " + count3);
-
-
-            /*block.removeBuilding(address);
-            TransformNode newTransform = new TransformNode();
-            float scale = 0.0073f;
-            newTransform.Scale = Vector3.One * scale;
-            newTransform.Translation = new Vector3(0.0f, -64.25f, 0.0f);
-            //          newTransform.Translation = new Vector3(33.5f, -54.25f, 0.0f);
-            newTransform.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
-            newTransform.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ,
-                                (float)(zRot * Math.PI / 180)) * Quaternion.CreateFromAxisAngle(Vector3.UnitX,
-                                MathHelper.PiOver2) * newTransform.Rotation;
-            newTransform.AddChild(buildingToTransfer);
-            global.groundMarkerNode.AddChild(newTransform);*/
         }
 
         /// <summary>
@@ -853,9 +843,14 @@ namespace MARVIN
                 pointer.performPointing();
                 //global.block1.printBuildingCoordinates();
             }
+
+            if (global.groundMarkerNode.MarkerFound)
+            {
+                drawAttributeLabels();
+            }
             else
             {
-
+                hideAttributeLabels();
             }
             
             base.Draw(gameTime);
@@ -866,6 +861,50 @@ namespace MARVIN
         }
 
 
+        private void drawAttributeLabels()
+        {
+            //First we refresh the labels' text
+            G2DLabel myLabel;
+            
+            //Now we draw them on the screen
+            for (int i = 0; i < 8; i++)
+            {
+                Vector4 homog_attributeWorldCoords = Vector4.Transform(global.ORIGIN, global.attributeTransNodes[i].WorldTransformation * global.groundMarkerNode.WorldTransformation);
+                Vector3 inhomog_attributeWorldCoords = new Vector3(homog_attributeWorldCoords.X, homog_attributeWorldCoords.Y, homog_attributeWorldCoords.Z);
+                Vector3 homog_attributeScreenCoords = global.graphics.GraphicsDevice.Viewport.Project(inhomog_attributeWorldCoords,
+                    State.ProjectionMatrix, State.ViewMatrix, Matrix.Identity);
+
+                if (i == 0)
+                {
+                    //GoblinXNA.UI.Notifier.AddMessage("Attribute 1 Screen Coords: " + homog_attributeScreenCoords);
+                }
+
+                global.labelPanels[i].Bounds = new Rectangle((int)homog_attributeScreenCoords.X + 15, (int)homog_attributeScreenCoords.Y - 15, 160, 25);
+                global.attributeLabels[i].Bounds = new Rectangle(0, 0, 160, 25);
+
+                myLabel = new G2DLabel(global.attributes[i].name);
+                myLabel.Visible = true;
+                myLabel.TextFont = global.uiFont;
+                myLabel.TextColor = new Color(global.colorPalette[i]);
+
+                global.labelPanels[i].AddChild(myLabel);
+                global.labelPanels[i].Visible = true;
+                
+                global.attributeLabels[i].Visible = true;
+            }
+        }
+
+        private void hideAttributeLabels()
+        {
+            //Now we draw them on the screen
+            for (int i = 0; i < 8; i++)
+            {
+                global.labelPanels[i].Visible = false;
+            }
+        }
+           
+
+
         private void MouseClickHandler(int button, Point mouseLocation)
         {
             if (button == MouseInput.LeftButton)
@@ -874,19 +913,37 @@ namespace MARVIN
                 {
                     //Do nothing.
                 }
-                if (global.typeOfObjectBeingHighlighted == global.BUILDING)
+                else if (global.typeOfObjectBeingHighlighted == global.BUILDING)
                 {
                     global.typeOfObjectBeingSelected = global.BUILDING;
-                    global.indexOfObjectBeingSelected = global.indexOfObjectBeingHighlighted;
+                    global.indexOfBuildingBeingSelected = global.indexOfObjectBeingHighlighted;
+                    global.label = "Building " + global.indexOfBuildingBeingSelected + " selected.";
 
                     global.resetObjectColors();
                     
                     //Draw Bounding Box around building //////////////////////////////////////////////////////////////////////////////////////////////////
                     transferBuildingToNotebook();
                 }
-                else //if (global.typeOfObjectBeingHighlighted == global.ATTRIBUTE)
+                else if (global.typeOfObjectBeingHighlighted == global.ATTRIBUTE)
                 {
-                    //NEED STUFF HERE!
+                    global.typeOfObjectBeingSelected = global.ATTRIBUTE;
+                    //global.indexOfBuildingBeingSelected = global.indexOfObjectBeingHighlighted;
+
+                    //if we're deselecting an attribute
+                    if (global.indexOfObjectBeingHighlighted == global.attributeCurrentlyBeingViewed)
+                    {
+                        global.attributeCurrentlyBeingViewed = global.NOTHING;
+                    }
+                    else
+                    {
+                        global.attributeCurrentlyBeingViewed = global.indexOfObjectBeingHighlighted;
+                    }
+                    
+                    global.resetObjectColors();
+                }
+                else
+                {
+                    //Do nothing. :)
                 }
             }
             else if (button == MouseInput.RightButton)
@@ -913,12 +970,12 @@ namespace MARVIN
             {
                 if (global.typeOfObjectBeingHighlighted == global.LEFT_CONE)
                 {
-                    Quaternion extraRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, 0.05f);
+                    Quaternion extraRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, 0.1f);
                     global.notebookShowcaseModelTransNode.Rotation = Quaternion.Concatenate(global.notebookShowcaseModelTransNode.Rotation, extraRotation);
                 }
                 else if(global.typeOfObjectBeingHighlighted == global.RIGHT_CONE)
                 {
-                    Quaternion extraRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -0.05f);
+                    Quaternion extraRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -0.1f);
                     global.notebookShowcaseModelTransNode.Rotation = Quaternion.Concatenate(global.notebookShowcaseModelTransNode.Rotation, extraRotation);
                 }
             }
