@@ -101,7 +101,7 @@ namespace MARVIN
                     thisNewBuilding.setAddress(thisBuildingAddress);
                     thisNewBuilding.setAirRights(thisBuildingAirRights);
                     thisNewBuilding.setSaleDate(thisBuildingSaleDate);
-                    thisNewBuilding.setDescription(thisBuildingDescription);
+                    thisNewBuilding.setDescription("");
                     thisNewBuilding.setClass(thisBuildingClass);
                     thisNewBuilding.setType(thisBuildingType);
                     thisNewBuilding.setYearBuilt(thisBuildingYearBuilt);
@@ -175,13 +175,13 @@ namespace MARVIN
         {
             XmlDocument newXML = new XmlDocument();
             XmlDeclaration declaration = newXML.CreateXmlDeclaration("1.0", "utf-8", null);
-            XmlElement rootNode = doc.CreateElement("'Root'");
-            doc.InsertBefore(declaration, doc.DocumentElement);
-            doc.AppendChild(rootNode);
+            newXML.InsertBefore(declaration, newXML.DocumentElement);
+            XmlElement rootNode = newXML.CreateElement("Root");
+            newXML.AppendChild(rootNode);
             foreach (Attribute attrib in global.attributes)
             {
-                XmlElement AttributeNode = doc.CreateElement("Attribute");
-                AttributeNode.SetAttribute(attrib.name,attrib.value.ToString());
+                XmlElement AttributeNode = newXML.CreateElement("Attribute");
+                AttributeNode.SetAttribute("name",attrib.name);
                 AttributeNode.SetAttribute("min", attrib.min.ToString());
                 AttributeNode.SetAttribute("max", attrib.max.ToString());
                 rootNode.AppendChild(AttributeNode);
@@ -191,7 +191,7 @@ namespace MARVIN
             {
       
                 //Now that we have the building name, lets use it to write to the newXML
-                XmlElement buildingNode = doc.CreateElement("Building");
+                XmlElement buildingNode = newXML.CreateElement("Building");
                 buildingNode.SetAttribute("Name", building.getBuildingName());
                 buildingNode.SetAttribute("Address",building.getAddress());
                 buildingNode.SetAttribute("Stories", building.getStories());
@@ -201,10 +201,11 @@ namespace MARVIN
                 buildingNode.SetAttribute("Building_Class",building.getClass());
                 buildingNode.SetAttribute("Toxic_Sites", building.getToxicSites());
                 buildingNode.SetAttribute("Unused_Buildable_Square_Feet", building.getAirRights());
+                buildingNode.SetAttribute("Description",building.getDescription());
 
                 foreach (Attribute buildingAttribute in global.attributes)
                 {
-                    String attributeName = buildingAttribute.value.ToString();
+                    String attributeName = buildingAttribute.name.ToString();
                    
                     buildingNode.SetAttribute(attributeName,building.getAttributeValue(attributeName).ToString());
                 }

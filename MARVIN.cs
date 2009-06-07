@@ -76,6 +76,8 @@ namespace MARVIN
             //Initialize the labels
             global.initializeLabels();
 
+            this.IsMouseVisible = true;
+
             // Use the newton physics engine to perform collision detection
             global.scene.PhysicsEngine = new NewtonPhysics();
 
@@ -127,9 +129,10 @@ namespace MARVIN
             //            LoadDetailedBuildings(factor);
             //createBuildings(factor);            createBuildings2();
             //Parses the XML building data document
-            global.xmlFilename = "XMLFile2.xml";
-            try            {                global.doc.Load(global.xmlFilename);            }            catch(XmlException xmle)            {                Console.WriteLine("ERROR: " + xmle.Message);            }           // xmlReader.parseXMLBuildingFile(global.xmlFilename);            xmlManager.parseXMLBuildingFile(global.xmlFilename);            // Show Frames-Per-Second on the screen for debugging
-            State.ShowFPS = true;
+            global.xmlFilename = "XMLFile3.xml";
+            xmlManager.parseXMLBuildingFile(global.xmlFilename);
+            //try            {                global.doc.Load(global.xmlFilename);            }            catch(XmlException xmle)            {                Console.WriteLine("ERROR: " + xmle.Message);            }           // xmlReader.parseXMLBuildingFile(global.xmlFilename);            xmlManager.parseXMLBuildingFile(global.xmlFilename);            // Show Frames-Per-Second on the screen for debugging
+            //State.ShowFPS = true;
             State.ShowNotifications = true;
             GoblinXNA.UI.Notifier.FadeOutTime = 1;
 
@@ -137,6 +140,11 @@ namespace MARVIN
             MouseInput.Instance.MouseClickEvent += new HandleMouseClick(MouseClickHandler);
             // Add a mouse click callback function to perform picking when mouse is clicked
             MouseInput.Instance.MousePressEvent += new HandleMousePress(MousePressHandler);
+
+            MouseInput.Instance.MouseWheelMoveEvent +=new HandleMouseWheelMove(MouseScrollHandler );
+
+            global.createBuilding2DGUI();
+            global.createGradient2DGUI();
 
             base.Initialize();
         }
@@ -174,7 +182,7 @@ namespace MARVIN
             // on the device driver.  The values set here will work for a Microsoft VX 6000, 
             // and many other webcams.
             DirectShowCapture captureDevice = new DirectShowCapture();
-//            captureDevice.InitVideoCapture(3, FrameRate._30Hz, Resolution._800x600, ImageFormat.R8G8B8_24, false);            // captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);            captureDevice.InitVideoCapture(0, FrameRate._30Hz, Resolution._640x480,ImageFormat.R8G8B8_24, false);            
+            captureDevice.InitVideoCapture(3, FrameRate._30Hz, Resolution._800x600, ImageFormat.R8G8B8_24, false);            // captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);            captureDevice.InitVideoCapture(0, FrameRate._30Hz, Resolution._640x480,ImageFormat.R8G8B8_24, false);            
             //captureDevice.InitVideoCapture(0, -1, FrameRate._30Hz, Resolution._640x480, false);
             // Add this video capture device to the scene so that it can be used for
             // the marker tracker
@@ -299,7 +307,7 @@ namespace MARVIN
             global.blockTransNode.Translation = new Vector3(5.0f, -5.0f, -50.0f);
             //global.blockTransNode.Translation = new Vector3(5.0f, -5.0f, -50.0f);
             global.blockTransNode.Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.PiOver2);
-            global.blockTransNode.Rotation = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(2.0f), MathHelper.ToRadians(0.0f), MathHelper.ToRadians(0.0f)) * global.blockTransNode.Rotation;
+            global.blockTransNode.Rotation = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(-2.0f), MathHelper.ToRadians(0.0f), MathHelper.ToRadians(0.0f)) * global.blockTransNode.Rotation;
             global.blockMarker.AddChild(global.blockTransNode);
 
             for (int i = 0; i < 8; i++)
@@ -789,6 +797,7 @@ namespace MARVIN
         {
             //GeometryNode buildingToTransfer = (GeometryNode) global.buildingGeomNodes[global.indexOfObjectBeingHighlighted];
             GeometryNode buildingToTransfer = getBuildingNode(global.indexOfObjectBeingHighlighted);
+         //   buildingToTransfer.Model.OffsetToOrigin = true;
 
             int count1 = global.notebookShowcaseTransNode.Children.Count;
             Console.WriteLine("Before: " + count1);
@@ -797,7 +806,17 @@ namespace MARVIN
             int count2 = global.notebookShowcaseTransNode.Children.Count;
             Console.WriteLine("After: " + count2);
 
-            //global.notebookShowcaseModelTransNode.Translation = new Vector3(-20.0f, 0.0f, 7.0f); //(-20.0f, ...)            //global.notebookShowcaseModelTransNode.Scale = new Vector3(4.5f, 4.5f, 4.5f);///////////////Changed from 4.5 to 1.5            global.notebookShowcaseModelTransNode.Rotation = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Rotation;            global.notebookShowcaseModelTransNode.Rotation = Quaternion.Concatenate(global.notebookShowcaseModelTransNode.Rotation,                 Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathHelper.PiOver2));            global.notebookShowcaseModelTransNode.Scale = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Scale;            global.notebookShowcaseModelTransNode.Translation = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Translation;            global.notebookShowcaseModelTransNode.Translation += new Vector3(-20.0f, 0.0f, 7.0f);            global.notebookShowcaseModelTransNode.AddChild(buildingToTransfer);
+            //global.notebookShowcaseModelTransNode.Translation = new Vector3(-20.0f, 0.0f, 7.0f); //(-20.0f, ...)            
+            //global.notebookShowcaseModelTransNode.Scale = new Vector3(4.5f, 4.5f, 4.5f);///////////////Changed from 4.5 to 1.5            
+            global.notebookShowcaseModelTransNode.Rotation = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Rotation;            
+            global.notebookShowcaseModelTransNode.Rotation = Quaternion.Concatenate(global.notebookShowcaseModelTransNode.Rotation,                 
+                Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathHelper.PiOver2));            
+            global.notebookShowcaseModelTransNode.Scale = global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Scale;
+            global.notebookShowcaseModelTransNode.Translation = new Vector3(global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Translation.X, global.buildingTransNodes[global.indexOfObjectBeingHighlighted].Translation.Y, 0);            
+            global.notebookShowcaseModelTransNode.Translation += new Vector3(-20.0f, 0.0f, 7.0f);
+            Console.WriteLine(global.notebookShowcaseModelTransNode.Translation.ToString());
+            //buildingToTransfer.Model.OffsetToOrigin = true;
+            global.notebookShowcaseModelTransNode.AddChild(buildingToTransfer);
             //global.notebookShowcaseGeomNode = buildingToTransfer;
             //global.notebookShowcaseTransNode.AddChild(global.leftConeTransNode);//////////////////////////////////////////////////////
             //global.leftConeTransNode.AddChild(global.leftConeGeomNode);//YYY******New!
@@ -844,7 +863,7 @@ namespace MARVIN
 
             // Draw a 2D text string at the top-left of the screen
             UI2DRenderer.WriteText(Vector2.Zero, global.label, global.labelColor,
-                global.labelFont, GoblinEnums.HorizontalAlignment.Center, GoblinEnums.VerticalAlignment.Top);
+                global.labelFont, GoblinEnums.HorizontalAlignment.Left, GoblinEnums.VerticalAlignment.Top);
         }
 
 
@@ -889,8 +908,12 @@ namespace MARVIN
                 global.labelPanels[i].Visible = false;
             }
         }
-           
 
+        private void MouseScrollHandler(int delta, int value)
+        {
+            global.indexOfBuildingBeingSelected += delta;
+            global.indexOfBuildingBeingSelected = global.indexOfBuildingBeingSelected % 8;
+        }
 
         private void MouseClickHandler(int button, Point mouseLocation)
         {
@@ -904,12 +927,41 @@ namespace MARVIN
                 {
                     global.typeOfObjectBeingSelected = global.BUILDING;
                     global.indexOfBuildingBeingSelected = global.indexOfObjectBeingHighlighted;
-                    global.label = "Building " + global.indexOfBuildingBeingSelected + " selected.";
+                    global.label = "Selection: " + global.buildingList[global.indexOfBuildingBeingSelected].getBuildingName();
 
                     global.resetObjectColors();
 
                     //Draw Bounding Box around building //////////////////////////////////////////////////////////////////////////////////////////////////
                     transferBuildingToNotebook();
+
+                    global.refreshInfoPanel();
+                    for (int i = 0; i < 10; i++)
+                    {
+                        global.markerLabels[i].Visible = false;
+                    }
+                    global.markerLabels[0].Visible = true;
+                    global.nameField.Enabled = true;
+                    global.addressField.Enabled = false;
+                    global.storiesField.Enabled = false;
+                    global.toxicSitesField.Enabled = false;
+                    global.airRightsField.Enabled = false;
+                    global.yearBuiltField.Enabled = false;
+                    global.descriptionField.Enabled = false;
+                    global.typeField.Enabled = false;
+                    global.classField.Enabled = false;
+                    global.saleDateField.Enabled = false;
+                    global.nameField.Editable = true;
+                    global.nameField.setFocused(true);
+                    global.nameField.SelectAll();
+                    global.buildingInfoIndex = 0;
+
+                    if (global.attributeCurrentlyBeingViewed != global.NOTHING)
+                    {
+                        global.gradientNameLabel2.Text = "(Value for " + global.buildingList[global.indexOfBuildingBeingSelected].getBuildingName() + ": " + global.buildingList[global.indexOfBuildingBeingSelected].getAttributeValue(global.attributes[global.attributeCurrentlyBeingViewed].name) + ")";
+                        global.gradientNameLabel2.Visible = true;
+                    }
+                    
+
                 }
                 else if (global.typeOfObjectBeingHighlighted == global.ATTRIBUTE)
                 {
@@ -935,18 +987,237 @@ namespace MARVIN
             }
             else if (button == MouseInput.RightButton)
             {
-                //Maybe use this to confirm text input?
-
-
-                /*if ((operatingMode == SELECT) || (operatingMode == SCALE))
+                if (global.toolbar1MarkerNode.MarkerFound)
                 {
-                    scaleTrigger();
+                    if (global.buildingInfoIndex == -1)
+                    {
+                        if (global.indexOfBuildingBeingSelected != global.NOTHING)
+                        {
+                            for (int i = 0; i < 10; i++)
+                            {
+                                global.markerLabels[i].Visible = false;
+                            }
+                            global.markerLabels[0].Visible = true;
+                            global.nameField.Enabled = true;
+                            global.addressField.Enabled = false;
+                            global.storiesField.Enabled = false;
+                            global.toxicSitesField.Enabled = false;
+                            global.airRightsField.Enabled = false;
+                            global.yearBuiltField.Enabled = false;
+                            global.descriptionField.Enabled = false;
+                            global.typeField.Enabled = false;
+                            global.classField.Enabled = false;
+                            global.saleDateField.Enabled = false;
+                            global.nameField.Editable = true;
+                            global.nameField.setFocused(true);
+                            global.nameField.SelectAll();
+                            global.buildingInfoIndex = 0;
+                            global.buildingInfoPanel.Visible = true;
+                        }
+                        else
+                        {
+                            //Do nothing.
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < 10; i++)
+                        {
+                            global.markerLabels[i].Visible = false;
+                        }
+
+                        if (global.buildingInfoIndex == 0)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setBuildingName(global.nameField.Text);
+                            global.nameField.Enabled = false;
+                            global.nameField.Editable = false;
+                            global.nameField.setFocused(false);
+                        }
+                        else if (global.buildingInfoIndex == 1)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setAddress(global.addressField.Text);
+                            global.addressField.Enabled = false;
+                            global.addressField.Editable = false;
+                            global.addressField.setFocused(false);
+                        }
+                        else if (global.buildingInfoIndex == 2)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setStories(global.storiesField.Text);
+                            global.storiesField.Enabled = false;
+                            global.storiesField.Editable = false;
+                            global.storiesField.setFocused(false);
+                        }
+                        else if (global.buildingInfoIndex == 3)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setToxicSites(global.toxicSitesField.Text);
+                            global.toxicSitesField.Enabled = false;
+                            global.toxicSitesField.Editable = false;
+                            global.toxicSitesField.setFocused(false);
+                        }
+                        else if (global.buildingInfoIndex == 4)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setAirRights(global.airRightsField.Text);
+                            global.airRightsField.Enabled = false;
+                            global.airRightsField.Editable = false;
+                            global.airRightsField.setFocused(false);
+                        }
+                        else if (global.buildingInfoIndex == 5)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setYearBuilt(global.yearBuiltField.Text);
+                            global.yearBuiltField.Enabled = false;
+                            global.yearBuiltField.Editable = false;
+                            global.yearBuiltField.setFocused(false);
+                        }
+                        else if (global.buildingInfoIndex == 6)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setType(global.typeField.Text);
+                            global.typeField.Enabled = false;
+                            global.typeField.Editable = false;
+                            global.typeField.setFocused(false);
+                        }
+                        else if (global.buildingInfoIndex == 7)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setClass(global.classField.Text);
+                            global.classField.Enabled = false;
+                            global.classField.Editable = false;
+                            global.classField.setFocused(false);
+                        }
+                        else if (global.buildingInfoIndex == 8)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setSaleDate(global.saleDateField.Text);
+                            global.saleDateField.Enabled = false;
+                            global.saleDateField.Editable = false;
+                            global.saleDateField.setFocused(false);
+                        }
+                        else// if (global.buildingInfoIndex == 9)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setDescription(global.descriptionField.Text);
+                            global.descriptionField.Enabled = false;
+                            global.descriptionField.Editable = false;
+                            global.descriptionField.setFocused(false);
+                        }
+
+                        global.buildingInfoIndex = -1;
+                        global.buildingInfoPanel.Visible = false;
+                    }
                 }
-                else
+                else //if toolbar1 is not found
                 {
-                    cancelMove();
-                    returnToSelectMode();
-                }*/
+                    if (global.buildingInfoIndex == -1)
+                    {
+                        //Do nothing.
+                    }
+                    else
+                    {
+                        global.markerLabels[global.buildingInfoIndex].Visible = false;
+                        global.markerLabels[(global.buildingInfoIndex + 1) % 10].Visible = true;
+                        
+                        if (global.buildingInfoIndex == 0)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setBuildingName(global.nameField.Text);
+                            global.nameField.Enabled = false;
+                            global.nameField.Editable = false;
+                            global.nameField.setFocused(false);
+                            global.addressField.Enabled = true;
+                            global.addressField.Editable = true;
+                            global.addressField.setFocused(true);
+                            global.addressField.SelectAll();
+                        }
+                        else if (global.buildingInfoIndex == 1)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setAddress(global.addressField.Text);
+                            global.addressField.Enabled = false;
+                            global.addressField.Editable = false;
+                            global.addressField.setFocused(false);
+                            global.storiesField.Enabled = true;
+                            global.storiesField.Editable = true;
+                            global.storiesField.setFocused(true);
+                            global.storiesField.SelectAll();
+                        }
+                        else if (global.buildingInfoIndex == 2)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setStories(global.storiesField.Text);
+                            global.storiesField.setFocused(false);
+                            global.storiesField.Enabled = false;
+                            global.storiesField.Editable = false;
+                            global.toxicSitesField.Enabled = true;
+                            global.toxicSitesField.Editable = true;
+                            global.toxicSitesField.setFocused(true);
+                        }
+                        else if (global.buildingInfoIndex == 3)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setToxicSites(global.toxicSitesField.Text);
+                            global.toxicSitesField.Enabled = false;
+                            global.toxicSitesField.Editable = false;
+                            global.toxicSitesField.setFocused(false);
+                            global.airRightsField.Enabled = true;
+                            global.airRightsField.Editable = true;
+                            global.airRightsField.setFocused(true);
+                        }
+                        else if (global.buildingInfoIndex == 4)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setAirRights(global.airRightsField.Text);
+                            global.airRightsField.Enabled = false;
+                            global.airRightsField.Editable = false;
+                            global.airRightsField.setFocused(false);
+                            global.yearBuiltField.Enabled = true;
+                            global.yearBuiltField.Editable = true;
+                            global.yearBuiltField.setFocused(true);
+                        }
+                        else if (global.buildingInfoIndex == 5)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setYearBuilt(global.yearBuiltField.Text);
+                            global.yearBuiltField.Enabled = false;
+                            global.yearBuiltField.Editable = false;
+                            global.yearBuiltField.setFocused(false);
+                            global.typeField.Enabled = true;
+                            global.typeField.Editable = true;
+                            global.typeField.setFocused(true);
+                        }
+                        else if (global.buildingInfoIndex == 6)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setType(global.typeField.Text);
+                            global.typeField.setFocused(false);
+                            global.typeField.Enabled = false;
+                            global.typeField.Editable = false;
+                            global.classField.setFocused(true);
+                            global.classField.Enabled = true;
+                            global.classField.Editable = true;
+                        }
+                        else if (global.buildingInfoIndex == 7)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setClass(global.classField.Text);
+                            global.classField.Enabled = false;
+                            global.classField.Editable = false;
+                            global.classField.setFocused(false);
+                            global.saleDateField.Enabled = true;
+                            global.saleDateField.Editable = true;
+                            global.saleDateField.setFocused(true);
+                        }
+                        else if (global.buildingInfoIndex == 8)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setSaleDate(global.saleDateField.Text);
+                            global.saleDateField.Enabled = false;
+                            global.saleDateField.Editable = false;
+                            global.saleDateField.setFocused(false);
+                            global.descriptionField.Enabled = true;
+                            global.descriptionField.Editable = true;
+                            global.descriptionField.setFocused(true);
+                        }
+                        else// if (global.buildingInfoIndex == 9)
+                        {
+                            global.buildingList[global.indexOfBuildingBeingSelected].setDescription(global.descriptionField.Text);
+                            global.descriptionField.Enabled = false;
+                            global.descriptionField.Editable = false;
+                            global.descriptionField.setFocused(false);
+                            global.nameField.Enabled = true;
+                            global.nameField.Editable = true;
+                            global.nameField.setFocused(true);
+                        }
+
+                        global.buildingInfoIndex = (global.buildingInfoIndex + 1) % 10;
+                    }
+                }
             }
         }
 
@@ -966,6 +1237,11 @@ namespace MARVIN
                     global.notebookShowcaseModelTransNode.Rotation = Quaternion.Concatenate(global.notebookShowcaseModelTransNode.Rotation, extraRotation);
                 }
             }
+        }
+
+        public void finalize()
+        {
+            xmlManager.writeToXml("");
         }
     }
 }

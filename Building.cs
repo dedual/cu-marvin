@@ -36,17 +36,17 @@ namespace MARVIN
         TransformNode buildingTransNode; //Transform node for this building.
        
         //Building properties
-        String buildingName; //Building Name
-        String buildingAddress; //Building Address
-        String yearBuilt; //Year building was built;
-        String stories; // Number of stories
-        String saleDate; // sale Date of building
-        String buildingType; // building type
-        String buildingClass; // building class
-        String toxicSites; //Toxic Sites
-        String airRights; //air Rights
+        String buildingName = ""; //Building Name
+        String buildingAddress = ""; //Building Address
+        String yearBuilt = ""; //Year building was built;
+        String stories = ""; // Number of stories
+        String saleDate = ""; // sale Date of building
+        String buildingType = ""; // building type
+        String buildingClass = ""; // building class
+        String toxicSites = ""; //Toxic Sites
+        String airRights = ""; //air Rights
 
-        System.String buildingInfo; //Building info
+        System.String buildingInfo = ""; //Building info
         List<Attribute> attributes = new List<Attribute>(); //size 8
 
         //Constructors
