@@ -12,6 +12,7 @@ namespace MARVIN
             using (MARVIN game = new MARVIN())
             {
                 game.Run();
+                game.finalize();
             }
         }
     }
